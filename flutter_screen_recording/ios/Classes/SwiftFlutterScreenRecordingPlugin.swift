@@ -118,6 +118,7 @@ let screenSize = UIScreen.main.bounds
                     return;
                 }
 
+              DispatchQueue.main.async
                 switch rpSampleType {
                 case RPSampleBufferType.video:
                     print("writing sample....");
@@ -151,6 +152,7 @@ let screenSize = UIScreen.main.bounds
                 default:
                    print("not a video sample, so ignore");
                 }
+              }
             } ){(error) in
                         guard error == nil else {
                            //Handle error
