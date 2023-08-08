@@ -151,6 +151,7 @@ let screenSize = UIScreen.main.bounds
 
                 default:
                    print("not a video sample, so ignore");
+                   print(rpSampleType);
                 }
               }
             } ){(error) in
