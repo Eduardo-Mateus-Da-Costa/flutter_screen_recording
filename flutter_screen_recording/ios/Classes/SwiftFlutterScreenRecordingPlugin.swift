@@ -143,9 +143,9 @@ let screenSize = UIScreen.main.bounds
                             }
 
                          case RPSampleBufferType.audioMic:
-                                  if self.audioMicInput.isReadyForMoreMediaData {
+                                  if self.audioInput.isReadyForMoreMediaData {
                                         print("audioMic data added")
-                                        self.audioMicInput.append(cmSampleBuffer)
+                                        self.audioInput.append(cmSampleBuffer)
                                     }
 
 
