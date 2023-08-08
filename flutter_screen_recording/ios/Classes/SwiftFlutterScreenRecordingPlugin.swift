@@ -101,7 +101,7 @@ let screenSize = UIScreen.main.bounds
 
         //Tell the screen recorder to start capturing and to call the handler
         if #available(iOS 11.0, *) {
-            print("recordAudio");
+
             if(recordAudio){
                 RPScreenRecorder.shared().isMicrophoneEnabled=true;
             }else{
@@ -119,8 +119,8 @@ let screenSize = UIScreen.main.bounds
                 }
 
               DispatchQueue.main.async
-                switch rpSampleType {
-                case RPSampleBufferType.video:
+                switch rpSampleBufferType {
+                case .video:
                     print("writing sample....");
                     if self.videoWriter?.status == AVAssetWriter.Status.unknown {
 
@@ -142,16 +142,15 @@ let screenSize = UIScreen.main.bounds
                         }
                     }
 
-                    case RPSampleBufferType.audioMic:
-                        if self.audioInput.isReadyForMoreMediaData {
-                            print("audioMic data added")
-                            self.audioInput.append(cmSampleBuffer)
-                        }
+                case .audioMic:
+                      if self.audioInput.isReadyForMoreMediaData {
+                          print("audioMic data added")
+                          self.audioInput.append(cmSampleBuffer)
+                       }
 
 
                 default:
-                   print("not a video sample, so ignore");
-                   print(rpSampleType);
+                   print("not a video sample, so ignorre");
                 }
               }
             } ){(error) in
