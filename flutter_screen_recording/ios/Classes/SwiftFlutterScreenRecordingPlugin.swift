@@ -118,41 +118,41 @@ let screenSize = UIScreen.main.bounds
                     return;
                 }
 
-              DispatchQueue.main.async
-                switch rpSampleBufferType {
-                case .video:
-                    print("writing sample....");
-                    if self.videoWriter?.status == AVAssetWriter.Status.unknown {
+                DispatchQueue.main.async {
+                switch rpSampleType {
+                        case RPSampleBufferType.video:
+                            print("writing sample....");
+                            if self.videoWriter?.status == AVAssetWriter.Status.unknown {
 
-                        if (( self.videoWriter?.startWriting ) != nil) {
-                            print("Starting writing");
-                            self.myResult!(true)
-                            self.videoWriter?.startWriting()
-                            self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer))
-                        }
-                    }
-
-                    if self.videoWriter?.status == AVAssetWriter.Status.writing {
-                        if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
-                            print("Writting a sample");
-                            if  self.videoWriterInput?.append(cmSampleBuffer) == false {
-                                print(" we have a problem writing video")
-                                self.myResult!(false)
+                                if (( self.videoWriter?.startWriting ) != nil) {
+                                    print("Starting writing");
+                                    self.myResult!(true)
+                                    self.videoWriter?.startWriting()
+                                    self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer))
+                                }
                             }
+
+                            if self.videoWriter?.status == AVAssetWriter.Status.writing {
+                                if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
+                                    print("Writting a sample");
+                                    if  self.videoWriterInput?.append(cmSampleBuffer) == false {
+                                        print(" we have a problem writing video")
+                                        self.myResult!(false)
+                                    }
+                                }
+                            }
+
+                         case RPSampleBufferType.audioMic:
+                                  if self.audioMicInput.isReadyForMoreMediaData {
+                                        print("audioMic data added")
+                                        self.audioMicInput.append(cmSampleBuffer)
+                                    }
+
+
+                        default:
+                           print("not a video sample, so ignore");
                         }
-                    }
-
-                case .audioMic:
-                      if self.audioInput.isReadyForMoreMediaData {
-                          print("audioMic data added")
-                          self.audioInput.append(cmSampleBuffer)
-                       }
-
-
-                default:
-                   print("not a video sample, so ignorre");
-                }
-              }
+                                }
             } ){(error) in
                         guard error == nil else {
                            //Handle error
