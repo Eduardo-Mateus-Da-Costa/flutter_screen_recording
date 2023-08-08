@@ -63,7 +63,7 @@ class FlutterScreenRecording {
       //   // printDevLog: true,
       // );
 
-      await FlutterForegroundTask.init(
+      FlutterForegroundTask.init(
         androidNotificationOptions: AndroidNotificationOptions(
           channelId: 'notification_channel_id',
           channelName: titleNotification,
