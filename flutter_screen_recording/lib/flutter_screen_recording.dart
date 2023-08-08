@@ -34,6 +34,35 @@ class FlutterScreenRecording {
   static  _maybeStartFGS(String titleNotification, String messageNotification) async {
     if (!kIsWeb && Platform.isAndroid) {
 
+      // await FlutterForegroundTask.init(
+      //   androidNotificationOptions: AndroidNotificationOptions(
+      //     channelId: 'notification_channel_id',
+      //     channelName: titleNotification,
+      //     channelDescription: messageNotification,
+      //     channelImportance: NotificationChannelImportance.LOW,
+      //     priority: NotificationPriority.LOW,
+      //     iconData: const NotificationIconData(
+      //       resType: ResourceType.mipmap,
+      //       resPrefix: ResourcePrefix.ic,
+      //       name: 'launcher',
+      //     ),
+      //     buttons: [
+      //       // const NotificationButton(id: 'sendButton', text: 'Send'),
+      //       // const NotificationButton(id: 'testButton', text: 'Test'),
+      //     ],
+      //   ),
+      //   iosNotificationOptions: const IOSNotificationOptions(
+      //     showNotification: true,
+      //     playSound: false,
+      //   ),
+      //   // foregroundTaskOptions: const ForegroundTaskOptions(
+      //   //   interval: 5000,
+      //   //   autoRunOnBoot: true,
+      //   //   allowWifiLock: true,
+      //   // ),
+      //   // printDevLog: true,
+      // );
+
       await FlutterForegroundTask.init(
         androidNotificationOptions: AndroidNotificationOptions(
           channelId: 'notification_channel_id',
@@ -55,12 +84,13 @@ class FlutterScreenRecording {
           showNotification: true,
           playSound: false,
         ),
-        // foregroundTaskOptions: const ForegroundTaskOptions(
-        //   interval: 5000,
-        //   autoRunOnBoot: true,
-        //   allowWifiLock: true,
-        // ),
-        // printDevLog: true,
+        foregroundTaskOptions: const ForegroundTaskOptions(
+          interval: 5000,
+          isOnceEvent: false,
+          autoRunOnBoot: true,
+          allowWakeLock: true,
+          allowWifiLock: true,
+        ),
       );
     }
   }
