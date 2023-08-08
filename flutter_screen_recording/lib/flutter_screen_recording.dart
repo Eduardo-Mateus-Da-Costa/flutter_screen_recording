@@ -5,13 +5,19 @@ import 'dart:async';
 import 'dart:io';
 
 class FlutterScreenRecording {
-  static Future<bool> startRecordScreen(String name, {String titleNotification, String messageNotification}) async{
+  static Future<bool> startRecordScreen(String name, {String? titleNotification, String? messageNotification}) async{
+    if(titleNotification == null ){
+      titleNotification = "";
+    }
+    if(messageNotification == null ){
+      messageNotification = "";
+    }
     await _maybeStartFGS(titleNotification, messageNotification);
     final bool start = await FlutterScreenRecordingPlatform.instance.startRecordScreen(name);
     return start;
   }
 
-  static Future<bool> startRecordScreenAndAudio(String name, {String titleNotification, String messageNotification}) async {
+  static Future<bool> startRecordScreenAndAudio(String name, {String? titleNotification, String? messageNotification}) async {
     //await _maybeStartFGS(titleNotification, messageNotification);
     final bool start = await FlutterScreenRecordingPlatform.instance.startRecordScreenAndAudio(name);
     return start;
@@ -49,12 +55,12 @@ class FlutterScreenRecording {
         //   showNotification: true,
         //   playSound: false,
         // ),
-        foregroundTaskOptions: const ForegroundTaskOptions(
-          interval: 5000,
-          autoRunOnBoot: true,
-          allowWifiLock: true,
-        ),
-        printDevLog: true,
+        // foregroundTaskOptions: const ForegroundTaskOptions(
+        //   interval: 5000,
+        //   autoRunOnBoot: true,
+        //   allowWifiLock: true,
+        // ),
+        // printDevLog: true,
       );
     }
   }
