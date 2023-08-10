@@ -184,7 +184,7 @@ let screenSize = UIScreen.main.bounds
 
             //Now save the video
             PHPhotoLibrary.shared().performChanges({
-            print("self.videoOutputURL!", self.videoOutputURL!);
+            print("self.videoOutputURL!", self.videoOutputURL!.path);
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.videoOutputURL!)
             }) { saved, error in
                 if saved {
