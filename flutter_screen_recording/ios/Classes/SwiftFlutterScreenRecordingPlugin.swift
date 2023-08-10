@@ -5,7 +5,7 @@ import Photos
 
 public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     
-let myRecorder: RPScreenRecorder?
+var myRecorder: RPScreenRecorder?
 
 var videoOutputURL : URL?
 var videoWriter : AVAssetWriter?
