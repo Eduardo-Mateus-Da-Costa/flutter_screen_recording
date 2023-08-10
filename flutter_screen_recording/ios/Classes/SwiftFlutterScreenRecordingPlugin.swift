@@ -190,9 +190,9 @@ let screenSize = UIScreen.main.bounds
             }) { saved, error in
                 if saved {
                 print("enter0");
-                    let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
-                    let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                    alertController.addAction(defaultAction)
+//                     let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
+//                     let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//                     alertController.addAction(defaultAction)
                     //self.present(alertController, animated: true, completion: nil)
                 }
                 if error != nil {
