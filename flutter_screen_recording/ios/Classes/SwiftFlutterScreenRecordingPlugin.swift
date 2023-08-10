@@ -184,10 +184,12 @@ let screenSize = UIScreen.main.bounds
 
             //Now save the video
             PHPhotoLibrary.shared().performChanges({
+                        print("self.videoOutputURL!", self.videoOutputURL!);
             print("self.videoOutputURL!", self.videoOutputURL!.path);
                 PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: self.videoOutputURL!)
             }) { saved, error in
                 if saved {
+                print("enter0");
                     let alertController = UIAlertController(title: "Your video was successfully saved", message: nil, preferredStyle: .alert)
                     let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
                     alertController.addAction(defaultAction)
