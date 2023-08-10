@@ -5,7 +5,7 @@ import Photos
 
 public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     
-var myRecorder: RPScreenRecorder?
+let recorder = RPScreenRecorder.shared()
 
 var videoOutputURL : URL?
 var videoWriter : AVAssetWriter?
@@ -99,24 +99,17 @@ let screenSize = UIScreen.main.bounds
             
         }
 
-if(myRecorder == nil) {
-myRecorder = RPScreenRecorder();
-print("enter recorder");
-print("enter recorder data", myRecorder);
-} else {
-
-}
         //Tell the screen recorder to start capturing and to call the handler
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
-                myRecorder?.isMicrophoneEnabled=true;
+                RPScreenRecorder.shared().isMicrophoneEnabled=true;
             }else{
-                myRecorder?.isMicrophoneEnabled=false;
+                RPScreenRecorder.shared().isMicrophoneEnabled=false;
 
             }
             
-            myRecorder?.startCapture(
+            RPScreenRecorder.shared().startCapture(
             handler: { (cmSampleBuffer, rpSampleType, error) in
                 guard error == nil else {
                     //Handle error
@@ -176,13 +169,12 @@ print("enter recorder data", myRecorder);
     @objc func stopRecording() {
         //Stop Recording the screen
         if #available(iOS 11.0, *) {
-            myRecorder?.stopCapture( handler: { (error) in
+            RPScreenRecorder.shared().stopCapture( handler: { (error) in
                 print("stopping recording");
             })
         } else {
           //  Fallback on earlier versions
         }
-        myRecorder = nil;
 
         self.videoWriterInput?.markAsFinished();
         self.audioInput?.markAsFinished();
