@@ -100,7 +100,7 @@ let screenSize = UIScreen.main.bounds
         }
 
 if(myRecorder == nil) {
-myRecorder = RPScreenRecorder.shared();
+myRecorder = RPScreenRecorder();
 print("enter recorder");
 print("enter recorder data", myRecorder);
 } else {
