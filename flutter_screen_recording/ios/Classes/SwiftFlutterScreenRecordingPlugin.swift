@@ -110,13 +110,13 @@ print("enter recorder data", myRecorder);
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
-                myRecorder.isMicrophoneEnabled=true;
+                myRecorder?.isMicrophoneEnabled=true;
             }else{
-                myRecorder.isMicrophoneEnabled=false;
+                myRecorder?.isMicrophoneEnabled=false;
 
             }
             
-            myRecorder.startCapture(
+            myRecorder?.startCapture(
             handler: { (cmSampleBuffer, rpSampleType, error) in
                 guard error == nil else {
                     //Handle error
@@ -176,7 +176,7 @@ print("enter recorder data", myRecorder);
     @objc func stopRecording() {
         //Stop Recording the screen
         if #available(iOS 11.0, *) {
-            myRecorder.stopCapture( handler: { (error) in
+            myRecorder?.stopCapture( handler: { (error) in
                 print("stopping recording");
             })
         } else {
