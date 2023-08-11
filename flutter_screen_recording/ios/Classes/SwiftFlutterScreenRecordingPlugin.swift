@@ -171,6 +171,7 @@ let screenSize = UIScreen.main.bounds
         if #available(iOS 11.0, *) {
             RPScreenRecorder.shared().stopCapture( handler: { (error) in
                 print("stopping recording");
+                RPScreenRecorder.shared().isMicrophoneEnabled = false;
             })
         } else {
           //  Fallback on earlier versions
