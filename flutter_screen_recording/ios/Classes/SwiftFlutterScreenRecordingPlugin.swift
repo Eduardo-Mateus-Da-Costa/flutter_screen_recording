@@ -5,7 +5,7 @@ import Photos
 
 public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     
-let recorder = RPScreenRecorder.shared()
+var recorder : RPScreenRecorder? = RPScreenRecorder.shared()
 
 var videoOutputURL : URL?
 var videoWriter : AVAssetWriter?
@@ -172,6 +172,7 @@ let screenSize = UIScreen.main.bounds
             self.recorder.stopCapture( handler: { (error) in
                 print("stopping recording");
                 self.recorder.isMicrophoneEnabled = false;
+                self.recorder = nil;
             })
         } else {
           //  Fallback on earlier versions
