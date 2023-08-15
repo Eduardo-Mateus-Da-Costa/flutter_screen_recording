@@ -103,13 +103,13 @@ let screenSize = UIScreen.main.bounds
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
-                RPScreenRecorder.shared().isMicrophoneEnabled=true;
+                recorder.isMicrophoneEnabled=true;
             }else{
-                RPScreenRecorder.shared().isMicrophoneEnabled=false;
+                recorder.isMicrophoneEnabled=false;
 
             }
             
-            RPScreenRecorder.shared().startCapture(
+            recorder.startCapture(
             handler: { (cmSampleBuffer, rpSampleType, error) in
                 guard error == nil else {
                     //Handle error
@@ -169,9 +169,9 @@ let screenSize = UIScreen.main.bounds
     @objc func stopRecording() {
         //Stop Recording the screen
         if #available(iOS 11.0, *) {
-            RPScreenRecorder.shared().stopCapture( handler: { (error) in
+            recorder.stopCapture( handler: { (error) in
                 print("stopping recording");
-                RPScreenRecorder.shared().isMicrophoneEnabled = false;
+                recorder.isMicrophoneEnabled = false;
             })
         } else {
           //  Fallback on earlier versions
