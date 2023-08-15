@@ -46,6 +46,12 @@ let screenSize = UIScreen.main.bounds
 
     @objc func startRecording() {
 
+
+        if (self.recorder == nil) {
+        print("enter")
+        self.recorder  = RPScreenRecorder.shared()
+        }
+
         //Use ReplayKit to record the screen
         //Create the file path to write to
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
