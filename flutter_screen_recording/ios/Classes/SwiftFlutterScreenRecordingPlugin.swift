@@ -103,13 +103,13 @@ let screenSize = UIScreen.main.bounds
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
-                self.recorder.isMicrophoneEnabled=true;
+                self.recorder?.isMicrophoneEnabled=true;
             }else{
-                self.recorder.isMicrophoneEnabled=false;
+                self.recorder?.isMicrophoneEnabled=false;
 
             }
             
-            self.recorder.startCapture(
+            self.recorder?.startCapture(
             handler: { (cmSampleBuffer, rpSampleType, error) in
                 guard error == nil else {
                     //Handle error
@@ -169,9 +169,9 @@ let screenSize = UIScreen.main.bounds
     @objc func stopRecording() {
         //Stop Recording the screen
         if #available(iOS 11.0, *) {
-            self.recorder.stopCapture( handler: { (error) in
+            self.recorder?.stopCapture( handler: { (error) in
                 print("stopping recording");
-                self.recorder.isMicrophoneEnabled = false;
+                self.recorder?.isMicrophoneEnabled = false;
                 self.recorder = nil;
             })
         } else {
