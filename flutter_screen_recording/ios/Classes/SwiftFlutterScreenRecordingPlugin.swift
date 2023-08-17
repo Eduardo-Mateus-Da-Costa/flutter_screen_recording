@@ -65,7 +65,7 @@ let screenSize = UIScreen.main.bounds
 
         //Check the file does not already exist by deleting it if it does
         do {
-//             try FileManager.default.removeItem(at: videoOutputURL!)
+            try FileManager.default.removeItem(at: videoOutputURL!)
         } catch {}
 
         do {
