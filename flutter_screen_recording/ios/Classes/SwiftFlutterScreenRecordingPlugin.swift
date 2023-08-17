@@ -54,6 +54,12 @@ let screenSize = UIScreen.main.bounds
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
          self.videoOutputURL = documentsDirectory.appendingPathComponent(nameVideo)
              print("videoOutputURL", videoOutputURL);
+             if FileManager.default.fileExists(atPath: self.videoOutputURL.path) {
+                 print("Video file exists!");
+             } else {
+                 print("Video file does not exist.");
+             }
+
 
 
 
