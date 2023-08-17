@@ -46,12 +46,6 @@ let screenSize = UIScreen.main.bounds
 
     @objc func startRecording() {
 
-
-        if (self.recorder == nil) {
-        print("enter")
-        self.recorder  = RPScreenRecorder.shared()
-        }
-
         //Use ReplayKit to record the screen
         //Create the file path to write to
         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
@@ -109,13 +103,13 @@ let screenSize = UIScreen.main.bounds
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
-                self.recorder?.isMicrophoneEnabled=true;
+                RPScreenRecorder.shared().isMicrophoneEnabled=true;
             }else{
-                self.recorder?.isMicrophoneEnabled=false;
+                RPScreenRecorder.shared().isMicrophoneEnabled=false;
 
             }
             
-            self.recorder?.startCapture(
+            RPScreenRecorder.shared().startCapture(
             handler: { (cmSampleBuffer, rpSampleType, error) in
                 guard error == nil else {
                     //Handle error
@@ -175,10 +169,9 @@ let screenSize = UIScreen.main.bounds
     @objc func stopRecording() {
         //Stop Recording the screen
         if #available(iOS 11.0, *) {
-            self.recorder?.stopCapture( handler: { (error) in
+            RPScreenRecorder.shared().stopCapture( handler: { (error) in
                 print("stopping recording");
-                self.recorder?.isMicrophoneEnabled = false;
-                self.recorder = nil;
+
             })
         } else {
           //  Fallback on earlier versions
