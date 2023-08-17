@@ -48,8 +48,14 @@ let screenSize = UIScreen.main.bounds
 
         //Use ReplayKit to record the screen
         //Create the file path to write to
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-        self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
+//         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+//         self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
+
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+         self.videoOutputURL = documentsDirectory.appendingPathComponent(nameVideo)
+             print("videoOutputURL", videoOutputURL);
+
+
 
         //Check the file does not already exist by deleting it if it does
         do {
@@ -182,6 +188,8 @@ let screenSize = UIScreen.main.bounds
         
         self.videoWriter?.finishWriting {
             print("finished writing video");
+
+
 
             //Now save the video
             PHPhotoLibrary.shared().performChanges({
