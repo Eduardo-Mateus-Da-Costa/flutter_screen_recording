@@ -145,6 +145,14 @@ let screenSize = UIScreen.main.bounds
                                 }
                             }
 
+                    if self.videoWriter?.status == AVAssetWriter.Status.failed {
+                                                        print("Failes------");
+                    }
+
+ if self.videoWriter?.status == AVAssetWriter.Status.cancelled {
+                                                        print("cancelled------");
+                    }
+
                             print("self.videoWriter?.status", self.videoWriter?.status == AVAssetWriter.Status.writing)
                             if self.videoWriter?.status == AVAssetWriter.Status.writing {
                                  print("self.videoWriterInput?.isReadyForMoreMediaData", self.videoWriterInput?.isReadyForMoreMediaData)
