@@ -95,7 +95,7 @@ let screenSize = UIScreen.main.bounds
                 
                 let audioOutputSettings: [String : Any] = [
                     AVNumberOfChannelsKey : 2,
-                    AVFormatIDKey : kAudioFormatLinearPCM,
+                    AVFormatIDKey : kAudioFormatMPEG4AAC,
                     AVSampleRateKey: 44100,
                 ]
                 
