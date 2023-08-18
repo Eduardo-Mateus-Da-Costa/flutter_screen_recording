@@ -130,7 +130,7 @@ let screenSize = UIScreen.main.bounds
                     return;
                 }
 
-if CMSampleBufferDataIsReady(sampleBuffer) {
+if CMSampleBufferDataIsReady(cmSampleBuffer) {
                 DispatchQueue.main.async {
                 switch rpSampleType {
                         case RPSampleBufferType.video:
