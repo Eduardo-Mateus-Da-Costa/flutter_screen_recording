@@ -148,7 +148,7 @@ if CMSampleBufferDataIsReady(cmSampleBuffer) {
 
                     if self.videoWriter?.status == AVAssetWriter.Status.failed {
                                                         print("Failes------");
-                                                                    print("assetWriter.error:" self.videoWriter.error.debugDescription);
+                                                                    print("assetWriter.error:", self.videoWriter?.error.debugDescription);
 
                     }
 
