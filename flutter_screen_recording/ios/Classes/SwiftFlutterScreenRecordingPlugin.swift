@@ -134,6 +134,7 @@ let screenSize = UIScreen.main.bounds
                 switch rpSampleType {
                         case RPSampleBufferType.video:
                             print("writing sample....");
+                            print("check data", self.videoWriter?.status)
                             if self.videoWriter?.status == AVAssetWriter.Status.unknown {
 
                                 if (( self.videoWriter?.startWriting ) != nil) {
@@ -156,7 +157,6 @@ let screenSize = UIScreen.main.bounds
 
                          case RPSampleBufferType.audioMic:
                                   if self.audioInput.isReadyForMoreMediaData {
-                                        print("audioMic data added")
                                         self.audioInput.append(cmSampleBuffer)
                                     }
 
