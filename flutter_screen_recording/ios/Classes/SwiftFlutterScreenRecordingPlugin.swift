@@ -145,7 +145,9 @@ let screenSize = UIScreen.main.bounds
                                 }
                             }
 
+                            print("self.videoWriter?.status", self.videoWriter?.status == AVAssetWriter.Status.writing)
                             if self.videoWriter?.status == AVAssetWriter.Status.writing {
+                                 print("self.videoWriterInput?.isReadyForMoreMediaData", self.videoWriterInput?.isReadyForMoreMediaData)
                                 if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
                                     print("Writting a sample");
                                     if  self.videoWriterInput?.append(cmSampleBuffer) == false {
