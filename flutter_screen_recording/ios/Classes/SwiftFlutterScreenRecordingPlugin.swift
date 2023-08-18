@@ -130,6 +130,7 @@ let screenSize = UIScreen.main.bounds
                     return;
                 }
 
+if CMSampleBufferDataIsReady(sampleBuffer) {
                 DispatchQueue.main.async {
                 switch rpSampleType {
                         case RPSampleBufferType.video:
@@ -147,9 +148,8 @@ let screenSize = UIScreen.main.bounds
 
                     if self.videoWriter?.status == AVAssetWriter.Status.failed {
                                                         print("Failes------");
-                                                        self.myResult!(true)
-                                                        self.videoWriter?.startWriting()
-                                                        self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer))
+                                                                    print("assetWriter.error: \(assetWriter.error.debugDescription)")
+
                     }
 
  if self.videoWriter?.status == AVAssetWriter.Status.cancelled {
@@ -177,7 +177,7 @@ let screenSize = UIScreen.main.bounds
                         default:
                            print("not a video sample, so ignore");
                         }
-                                }
+                                }}
             } ){(error) in
                         guard error == nil else {
                            //Handle error
