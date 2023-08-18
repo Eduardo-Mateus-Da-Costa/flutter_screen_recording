@@ -147,6 +147,9 @@ let screenSize = UIScreen.main.bounds
 
                     if self.videoWriter?.status == AVAssetWriter.Status.failed {
                                                         print("Failes------");
+                                                        self.myResult!(true)
+                                                        self.videoWriter?.startWriting()
+                                                        self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer))
                     }
 
  if self.videoWriter?.status == AVAssetWriter.Status.cancelled {
