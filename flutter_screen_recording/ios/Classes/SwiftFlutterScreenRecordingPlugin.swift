@@ -51,8 +51,7 @@ let screenSize = UIScreen.main.bounds
 //         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
 //         self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
 
-//         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let documentsDirectory = URL(fileURLWithPath: NSTemporaryDirectory())
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
          self.videoOutputURL = documentsDirectory.appendingPathComponent(nameVideo)
              print("videoOutputURL", videoOutputURL);
              if FileManager.default.fileExists(atPath: self.videoOutputURL!.path) {
