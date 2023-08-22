@@ -93,11 +93,22 @@ let screenSize = UIScreen.main.bounds
                         
             if(recordAudio){
                 
-                let audioOutputSettings: [String : Any] = [
-                    AVNumberOfChannelsKey : 2,
-                    AVFormatIDKey : kAudioFormatMPEG4AAC,
-                    AVSampleRateKey: 44100,
-                ]
+//                 let audioOutputSettings: [String : Any] = [
+//                     AVNumberOfChannelsKey : 2,
+//                     AVFormatIDKey : kAudioFormatMPEG4AAC,
+//                     AVSampleRateKey: 44100,
+//                 ]
+var channelLayout = AudioChannelLayout()
+channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_MPEG_5_1_D
+
+let audioOutputSettings: [String : Any] = [
+    AVNumberOfChannelsKey: 6,
+
+    AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
+    AVSampleRateKey: 44100,
+    AVChannelLayoutKey: NSData(bytes: &channelLayout, length: MemoryLayout.size(ofValue: channelLayout)),
+]
+
                 
                 audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
                 videoWriter?.add(audioInput)
@@ -150,19 +161,6 @@ if CMSampleBufferDataIsReady(cmSampleBuffer) {
                     if self.videoWriter?.status == AVAssetWriter.Status.failed {
                                                         print("Failes------");
                                                                     print("assetWriter.error:", self.videoWriter?.error.debugDescription);
-                                                                      self.audioInput?.markAsFinished();
-                                                                      if(self.recordAudio){
-
-                                                                                    let audioOutputSettings: [String : Any] = [
-                                                                                        AVNumberOfChannelsKey : 2,
-                                                                                        AVFormatIDKey : kAudioFormatMPEG4AAC,
-                                                                                        AVSampleRateKey: 44100,
-                                                                                    ]
-
-                                                                                    self.audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
-                                                                                    self.videoWriter?.add(self.audioInput)
-
-                                                                                }
 
                     }
 
