@@ -103,7 +103,7 @@ let screenSize = UIScreen.main.bounds
                  var channelLayout = AudioChannelLayout.init()
                             channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_MPEG_5_1_D
                             let audioOutputSettings: [String : Any] = [
-                                AVNumberOfChannelsKey: 6,
+                                AVNumberOfChannelsKey: 2,
                                 AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
                                 AVSampleRateKey: 44100,
                                 AVChannelLayoutKey: NSData(bytes: &channelLayout, length: MemoryLayout.size(ofValue: channelLayout)),
