@@ -115,6 +115,7 @@ let screenSize = UIScreen.main.bounds
         if #available(iOS 11.0, *) {
 
             if(recordAudio){
+            print("hello mic test====");
                 RPScreenRecorder.shared().isMicrophoneEnabled=true;
             }else{
                 RPScreenRecorder.shared().isMicrophoneEnabled=false;
