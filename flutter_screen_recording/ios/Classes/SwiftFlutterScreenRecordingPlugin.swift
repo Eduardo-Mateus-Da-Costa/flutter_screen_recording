@@ -150,6 +150,19 @@ if CMSampleBufferDataIsReady(cmSampleBuffer) {
                     if self.videoWriter?.status == AVAssetWriter.Status.failed {
                                                         print("Failes------");
                                                                     print("assetWriter.error:", self.videoWriter?.error.debugDescription);
+                                                                      self.audioInput?.markAsFinished();
+                                                                      if(recordAudio){
+
+                                                                                    let audioOutputSettings: [String : Any] = [
+                                                                                        AVNumberOfChannelsKey : 2,
+                                                                                        AVFormatIDKey : kAudioFormatMPEG4AAC,
+                                                                                        AVSampleRateKey: 44100,
+                                                                                    ]
+
+                                                                                    audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
+                                                                                    videoWriter?.add(audioInput)
+
+                                                                                }
 
                     }
 
