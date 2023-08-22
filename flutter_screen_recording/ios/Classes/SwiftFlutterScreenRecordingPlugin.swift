@@ -195,7 +195,7 @@ if CMSampleBufferDataIsReady(cmSampleBuffer) {
             } ){(error) in
                         guard error == nil else {
                            //Handle error
-                           print("Screen record not allowed");
+                           print("Screen record not allowed", error);
                            self.myResult!(false)
                            return;
                        }
