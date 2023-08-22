@@ -102,7 +102,7 @@ var channelLayout = AudioChannelLayout()
 channelLayout.mChannelLayoutTag = kAudioChannelLayoutTag_MPEG_5_1_D
 
 let audioOutputSettings: [String : Any] = [
-    AVNumberOfChannelsKey: 6,
+    AVNumberOfChannelsKey: 3,
 
     AVFormatIDKey: kAudioFormatMPEG4AAC_HE,
     AVSampleRateKey: 44100,
