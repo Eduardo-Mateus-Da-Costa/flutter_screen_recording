@@ -94,7 +94,7 @@ let screenSize = UIScreen.main.bounds
             if(recordAudio){
                 
                 let audioOutputSettings: [String : Any] = [
-                    AVNumberOfChannelsKey : 1,
+                    AVNumberOfChannelsKey : 2,
                     AVFormatIDKey : kAudioFormatMPEG4AAC,
                     AVSampleRateKey: 44100,
                 ]
@@ -170,6 +170,7 @@ if CMSampleBufferDataIsReady(cmSampleBuffer) {
 
                          case RPSampleBufferType.audioMic:
                                   if self.audioInput.isReadyForMoreMediaData {
+                                  print("Writting a audio as wekk");
                                         self.audioInput.append(cmSampleBuffer)
                                     }
 
