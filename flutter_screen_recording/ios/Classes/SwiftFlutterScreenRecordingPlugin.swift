@@ -84,6 +84,18 @@ let screenSize = UIScreen.main.bounds
             if(recordAudio){
                 codec = AVVideoCodecH264;
             }
+
+            do {
+                try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryMultiRoute)
+            } catch let error as NSError {
+                print(error)
+            }
+
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch let error as NSError {
+                print(error)
+            }
             
             let videoSettings: [String : Any] = [
                 AVVideoCodecKey  : codec,
