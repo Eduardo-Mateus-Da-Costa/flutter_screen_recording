@@ -94,7 +94,7 @@ let screenSize = UIScreen.main.bounds
             if(recordAudio){
                 
                 let audioOutputSettings: [String : Any] = [
-                    AVNumberOfChannelsKey : 2,
+                    AVNumberOfChannelsKey : 1,
                     AVFormatIDKey : kAudioFormatMPEG4AAC,
                     AVSampleRateKey: 44100,
                 ]
