@@ -86,7 +86,7 @@ let screenSize = UIScreen.main.bounds
             }
 
             do {
-                try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryMultiRoute)
+                try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.multiRoute)
             } catch let error as NSError {
                 print(error)
             }
