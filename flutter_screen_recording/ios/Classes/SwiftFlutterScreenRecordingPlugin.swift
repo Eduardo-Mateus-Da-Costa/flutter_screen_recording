@@ -36,8 +36,8 @@ let screenSize = UIScreen.main.bounds
     }else if(call.method == "stopRecordScreen"){
         if(videoWriter != nil){
             stopRecording()
-            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-            result(String(documentsPath.appendingPathComponent(nameVideo)))
+//             let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            result(String(URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(nameVideo)))
         }
          result("")
     }
@@ -48,9 +48,11 @@ let screenSize = UIScreen.main.bounds
 
         //Use ReplayKit to record the screen
         //Create the file path to write to
-        let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-        self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
+//         let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+//         self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
+             self.videoOutputURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(nameVideo)
              print("videoOutputURL", videoOutputURL);
+
 
 
 
