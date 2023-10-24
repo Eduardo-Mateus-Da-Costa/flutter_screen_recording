@@ -36,10 +36,10 @@ let screenSize = UIScreen.main.bounds
     }else if(call.method == "stopRecordScreen"){
         if(videoWriter != nil){
             stopRecording()
-            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-            print("check url is", self.videoOutputURL)
-            print("String(self.videoOutputURL)", String(self.videoOutputURL))
-            result(String(self.videoOutputURL))
+//             let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+            let documentsPath = URL(fileURLWithPath: NSTemporaryDirectory())
+            print("path iss", documentsPath)
+            result(String(documentsPath.appendingPathComponent(nameVideo)))
         }
          result("")
     }
