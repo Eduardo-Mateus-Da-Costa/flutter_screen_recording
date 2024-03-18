@@ -1,0 +1,3 @@
+package flutter_screen_recording.android
+
+rootProject.name = 'flutter_screen_recording'
