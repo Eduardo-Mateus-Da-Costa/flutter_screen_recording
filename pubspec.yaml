@@ -16,3 +16,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.isvisoft.flutter_screen_recording
+        pluginClass: FlutterScreenRecordingPlugin
+      ios:
+        pluginClass: FlutterScreenRecordingPlugin
+      web:
+        default_package: flutter_screen_recording_web
