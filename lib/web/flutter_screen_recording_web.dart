@@ -4,29 +4,37 @@ import 'dart:async';
 import 'dart:html';
 import 'dart:js';
 
-import 'package:flutter_screen_recording_platform_interface/flutter_screen_recording_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
+import '../interface/flutter_screen_recording_platform_interface.dart';
 import 'interop/get_display_media.dart';
 
 class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
   MediaStream? stream;
-  late String name;
+  String? name;
   MediaRecorder? mediaRecorder;
-  late Blob recordedChunks;
-  late String mimeType;
+  Blob? recordedChunks;
+  String? mimeType;
 
   static registerWith(Registrar registrar) {
     FlutterScreenRecordingPlatform.instance = WebFlutterScreenRecording();
   }
 
   @override
-  Future<bool> startRecordScreen(String name) async {
+  Future<bool> startRecordScreen(
+    String name, {
+    String notificationTitle = "",
+    String notificationMessage = "",
+  }) async {
     return _record(name, true, false);
   }
 
   @override
-  Future<bool> startRecordScreenAndAudio(String name) async {
+  Future<bool> startRecordScreenAndAudio(
+    String name, {
+    String notificationTitle = "",
+    String notificationMessage = "",
+  }) async {
     return _record(name, true, true);
   }
 
@@ -102,7 +110,7 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
       final a = document.createElement("a") as AnchorElement;
       final url = Url.createObjectUrl(
           new Blob(List<dynamic>.from([recordedChunks]), mimeType));
-      document.body?.append(a);
+      document.body!.append(a);
       a.style.display = "none";
       a.href = url;
       a.download = this.name;

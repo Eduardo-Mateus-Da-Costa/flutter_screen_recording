@@ -1,7 +1,9 @@
 library flutter_screen_recording_platform_interface;
 
 import 'dart:async';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
 import 'method_channel_flutter_screen_recording.dart';
 
 abstract class FlutterScreenRecordingPlatform extends PlatformInterface {
@@ -27,11 +29,19 @@ abstract class FlutterScreenRecordingPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<bool> startRecordScreen(String name) {
+  Future<bool> startRecordScreen(
+    String name, {
+    String notificationTitle = "",
+    String notificationMessage = "",
+  }) {
     throw UnimplementedError();
   }
 
-  Future<bool> startRecordScreenAndAudio(String name) {
+  Future<bool> startRecordScreenAndAudio(
+    String name, {
+    String notificationTitle = "",
+    String notificationMessage = "",
+  }) {
     throw UnimplementedError();
   }
 

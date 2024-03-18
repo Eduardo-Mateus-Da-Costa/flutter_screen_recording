@@ -3,6 +3,7 @@ package com.isvisoft.flutter_screen_recording
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -43,6 +44,7 @@ class FlutterScreenRecordingPlugin(
     var videoName: String? = ""
     var mFileName: String? = ""
     var recordAudio: Boolean? = false;
+    var recordInternalAudio: Boolean? = false;
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
@@ -68,7 +70,6 @@ class FlutterScreenRecordingPlugin(
                 _result.success(true)
                 return true
             } else {
-                ForegroundService.stopService(registrar.context())
                 _result.success(false)
             }
         }
@@ -78,9 +79,16 @@ class FlutterScreenRecordingPlugin(
     override fun  onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "startRecordScreen") {
             try {
-
                 _result = result
-                ForegroundService.startService(registrar.context(), "Your screen is being recorded")
+                var title = call.argument<String?>("title")
+                var message = call.argument<String?>("message")
+                if (title == null || title == "") {
+                    title = "Your screen is being recorded";
+                }
+                if (message == null || message == "") {
+                    message = "Your screen is being recorded"
+                }
+                ForegroundService.startService(registrar.context(), title, message)
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
@@ -102,7 +110,7 @@ class FlutterScreenRecordingPlugin(
                 calculeResolution(metrics)
                 videoName = call.argument<String?>("name")
                 recordAudio = call.argument<Boolean?>("audio")
-
+                recordInternalAudio = call.argument<Boolean?>("internalAudio")
                 startRecordScreen()
 
             } catch (e: Exception) {
@@ -129,24 +137,32 @@ class FlutterScreenRecordingPlugin(
 
     private fun calculeResolution(metrics: DisplayMetrics) {
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            mDisplayHeight = metrics.heightPixels
-            mDisplayWidth = metrics.widthPixels
-        }else{
-            var maxRes = 1280.0;
-            if (metrics.scaledDensity >= 3.0f) {
-                maxRes = 1920.0;
-            }
-            if (metrics.widthPixels > metrics.heightPixels) {
-                val rate = metrics.widthPixels / maxRes
-                mDisplayWidth = maxRes.toInt()
-                mDisplayHeight = (metrics.heightPixels / rate).toInt()
-            } else {
-                val rate = metrics.heightPixels / maxRes
-                mDisplayHeight = maxRes.toInt()
-                mDisplayWidth = (metrics.widthPixels / rate).toInt()
-            }
+        mDisplayHeight = metrics.heightPixels
+        mDisplayWidth = metrics.widthPixels
+
+        var maxRes = 1280.0;
+        if (metrics.scaledDensity >= 3.0f) {
+            maxRes = 1920.0;
         }
+        if (metrics.widthPixels > metrics.heightPixels) {
+            var rate = metrics.widthPixels / maxRes
+
+            if(rate > 1.5){
+                rate = 1.5
+            }
+            mDisplayWidth = maxRes.toInt()
+            mDisplayHeight = (metrics.heightPixels / rate).toInt()
+            println("Rate : $rate")
+        } else {
+            var rate = metrics.heightPixels / maxRes
+            if(rate > 1.5){
+                rate = 1.5
+            }
+            mDisplayHeight = maxRes.toInt()
+            mDisplayWidth = (metrics.widthPixels / rate).toInt()
+            println("Rate : $rate")
+        }
+
         println("Scaled Density")
         println(metrics.scaledDensity)
         println("Original Resolution ")
@@ -165,10 +181,15 @@ class FlutterScreenRecordingPlugin(
                 return
             }
             mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            if (recordAudio!!) {
-                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
+            if (recordAudio!! || recordInternalAudio!!) {
+                if (recordInternalAudio!!) {
+                    mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
+                }
+                if (recordAudio!!) {
+                    mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
+                }
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.MPEG_4);
             } else {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             }
@@ -207,8 +228,16 @@ class FlutterScreenRecordingPlugin(
     }
 
     private fun createVirtualDisplay(): VirtualDisplay? {
-        return mMediaProjection?.createVirtualDisplay("MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
-                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null)
+        try {
+            return mMediaProjection?.createVirtualDisplay(
+                    "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
+            )
+        } catch (e: Exception) {
+            println("createVirtualDisplay err")
+            println(e.message)
+            return null
+        }
     }
 
     private fun stopScreenSharing() {
