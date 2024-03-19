@@ -204,18 +204,16 @@ class FlutterScreenRecordingPlugin(
             if (recordInternalAudio!!) {
                 println("Record Internal Audio")
                 try{
-                    mAudioRecord = AudioRecord.Builder().setAudioFormat(
-                            AudioFormat.Builder()
-                                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                                    .setSampleRate(44100)
-                                    .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
-                                    .build()
-                    )
-                            .setAudioPlaybackCaptureConfig(AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
-                                    .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                                    .addMatchingUsage(AudioAttributes.USAGE_GAME)
-                                    .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
-                                    .build())
+                    var mAudioFormat = AudioFormat.Builder()
+                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                            .setSampleRate(8000)
+                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                            .build()
+                    var mAudioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+                            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+                            .build()
+                    mAudioRecord = AudioRecord.Builder().setAudioFormat(mAudioFormat)
+                            .setAudioPlaybackCaptureConfig(mAudioPlaybackCaptureConfig)
                             .build()
                 }catch (e: Exception){
                     println("Error AudioRecord")
