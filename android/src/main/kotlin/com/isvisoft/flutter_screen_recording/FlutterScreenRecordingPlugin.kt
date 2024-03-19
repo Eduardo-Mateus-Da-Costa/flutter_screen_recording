@@ -184,6 +184,8 @@ class FlutterScreenRecordingPlugin(
 
     fun startRecordScreen() {
         try {
+            val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
+            ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
                 mFileName += "/$videoName.mp4"
@@ -235,8 +237,6 @@ class FlutterScreenRecordingPlugin(
             println("Error startRecordScreen")
             println(e.message)
         }
-        val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
-        ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
     }
 
 
