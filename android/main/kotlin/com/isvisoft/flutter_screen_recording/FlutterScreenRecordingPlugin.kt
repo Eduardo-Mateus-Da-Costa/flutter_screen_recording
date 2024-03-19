@@ -118,7 +118,7 @@ class FlutterScreenRecordingPlugin(
                 calculeResolution(metrics)
                 videoName = call.argument<String?>("name")
                 recordAudio = call.argument<Boolean?>("audio")
-                recordInternalAudio = call.argument<Boolean?>("internalAudio")
+                recordInternalAudio = call.argument<Boolean?>("internalaudio")
                 startRecordScreen()
 
             } catch (e: Exception) {

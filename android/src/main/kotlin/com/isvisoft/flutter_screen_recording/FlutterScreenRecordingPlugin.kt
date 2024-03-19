@@ -7,6 +7,8 @@ import android.content.res.Configuration
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
+import android.media.AudioPlaybackCaptureConfiguration
+import android.media.AudioRecord
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
@@ -28,6 +30,10 @@ import java.io.IOException
 
 import com.foregroundservice.ForegroundService
 
+import com.arthenica.mobileffmpeg.ExecuteCallback;
+import com.arthenica.mobileffmpeg.FFmpeg;
+import com.arthenica.mobileffmpeg.FFmpegExecution;
+
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -39,11 +45,14 @@ class FlutterScreenRecordingPlugin(
     var mMediaProjection: MediaProjection? = null
     var mMediaProjectionCallback: MediaProjectionCallback? = null
     var mVirtualDisplay: VirtualDisplay? = null
+    var mAudioRecord: AudioRecord? = null
     var mDisplayWidth: Int = 1280
     var mDisplayHeight: Int = 800
     var videoName: String? = ""
     var mFileName: String? = ""
+    var mAudioFileName: String? = ""
     var recordAudio: Boolean? = false;
+    var recordInternalAudio: Boolean? = false;
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
@@ -91,7 +100,7 @@ class FlutterScreenRecordingPlugin(
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
                 } else {
                     @Suppress("DEPRECATION")
@@ -109,6 +118,7 @@ class FlutterScreenRecordingPlugin(
                 calculeResolution(metrics)
                 videoName = call.argument<String?>("name")
                 recordAudio = call.argument<Boolean?>("audio")
+                recordInternalAudio = call.argument<Boolean?>("internalaudio")
                 startRecordScreen()
 
             } catch (e: Exception) {
@@ -174,17 +184,35 @@ class FlutterScreenRecordingPlugin(
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
                 mFileName += "/$videoName.mp4"
+                mAudioFileName = mFileName?.replace(".mp4", ".mp3")
             } catch (e: IOException) {
                 println("Error creating name")
                 return
             }
             mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             if (recordAudio!!) {
+                println("Record Audio")
                 mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             } else {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            }
+            if (recordInternalAudio!!) {
+                println("Record Internal Audio")
+                mAudioRecord = AudioRecord.Builder().setAudioFormat(
+                        AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(44100)
+                                .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
+                                .build()
+                )
+                        .setAudioPlaybackCaptureConfig(AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+                                .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+                                .addMatchingUsage(AudioAttributes.USAGE_GAME)
+                                .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
+                                .build())
+                        .build()
             }
             mMediaRecorder?.setOutputFile(mFileName)
             mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
@@ -194,6 +222,7 @@ class FlutterScreenRecordingPlugin(
 
             mMediaRecorder?.prepare()
             mMediaRecorder?.start()
+            mAudioRecord?.startRecording()
         } catch (e: IOException) {
             Log.d("--INIT-RECORDER", e.message+"")
             println("Error startRecordScreen")
@@ -203,11 +232,34 @@ class FlutterScreenRecordingPlugin(
         ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
     }
 
+
+    fun startAudioSave() {
+        val file = File(mAudioFileName)
+        if (file.exists()) {
+            file.delete()
+        }
+        val buffer = ByteArray(1024)
+        val fileOutputStream = FileOutputStream(mAudioFileName)
+        while (mAudioRecord?.read(buffer, 0, buffer.size)!! > 0) {
+            println("Buffer : $buffer")
+            fileOutputStream.write(buffer)
+        }
+        println("startAudioSave success")
+        fileOutputStream.close()
+    }
+
     fun stopRecordScreen() {
         try {
             println("stopRecordScreen")
+            mAudioRecord?.stop()
             mMediaRecorder?.stop()
+            if (recordInternalAudio!!){
+                println("stopRecordScreen startAudioSave")
+                startAudioSave()
+                mAudioRecord?.release()
+            }
             mMediaRecorder?.reset()
+            joinFiles()
             println("stopRecordScreen success")
 
         } catch (e: Exception) {
@@ -220,17 +272,48 @@ class FlutterScreenRecordingPlugin(
         }
     }
 
+    fun joinFiles() {
+        Log.d("--FFmpeg", "Joining files")
+        prnt("Joining files")
+        val mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
+        val command = "-i $mFileName -i $mAudioFileName -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
+        println(command)
+        println("Executing FFmpeg command")
+        FFmpeg.executeAsync(command, object : ExecuteCallback {
+            override fun apply(executionId: Long, returnCode: Int) {
+                if (returnCode == RETURN_CODE_SUCCESS) {
+                    val file = File(mFileName)
+                    if (file.exists()) {
+                        file.delete()
+                    }
+                    val fileAudio = File(mAudioFileName)
+                    if (fileAudio.exists()) {
+                        fileAudio.delete()
+                    }
+                    val fileMerge = File(mMergeFileName)
+                    if (fileMerge.exists()) {
+                        fileMerge.renameTo(File(mFileName))
+                    }
+                    println("Joining files success")
+                } else {
+                    println("Joining files error")
+                    throw Exception("Error merging files $returnCode")
+                }
+            }
+        })
+    }
+
     private fun createVirtualDisplay(): VirtualDisplay? {
-    try {
-      return mMediaProjection?.createVirtualDisplay(
-        "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
-        DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
-      )
-    } catch (e: Exception) {
-      println("createVirtualDisplay err")
-      println(e.message)
-      return null
-      }
+        try {
+            return mMediaProjection?.createVirtualDisplay(
+                    "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
+            )
+        } catch (e: Exception) {
+            println("createVirtualDisplay err")
+            println(e.message)
+            return null
+        }
     }
 
     private fun stopScreenSharing() {
@@ -248,6 +331,7 @@ class FlutterScreenRecordingPlugin(
     inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
             mMediaRecorder?.reset()
+            mAudioRecord?.release()
             mMediaProjection = null
             stopScreenSharing()
         }
