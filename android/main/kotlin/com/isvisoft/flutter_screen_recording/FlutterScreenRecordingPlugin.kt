@@ -27,7 +27,10 @@ import io.flutter.plugin.common.PluginRegistry
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.File
 import java.io.IOException
-
+import android.media.AudioFormat
+import android.media.AudioAttributes
+import android.media.MediaRecorder.AudioSource
+import java.io.FileOutputStream
 import com.foregroundservice.ForegroundService
 
 import com.arthenica.mobileffmpeg.ExecuteCallback;
@@ -200,20 +203,26 @@ class FlutterScreenRecordingPlugin(
             }
             if (recordInternalAudio!!) {
                 println("Record Internal Audio")
-                mAudioRecord = AudioRecord.Builder().setAudioFormat(
-                        AudioFormat.Builder()
-                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                                .setSampleRate(44100)
-                                .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
-                                .build()
-                )
-                        .setAudioPlaybackCaptureConfig(AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
-                                .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                                .addMatchingUsage(AudioAttributes.USAGE_GAME)
-                                .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
-                                .build())
-                        .build()
+                try{
+                    mAudioRecord = AudioRecord.Builder().setAudioFormat(
+                            AudioFormat.Builder()
+                                    .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                    .setSampleRate(44100)
+                                    .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
+                                    .build()
+                    )
+                            .setAudioPlaybackCaptureConfig(AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+                                    .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+                                    .addMatchingUsage(AudioAttributes.USAGE_GAME)
+                                    .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
+                                    .build())
+                            .build()
+                }catch (e: Exception){
+                    println("Error AudioRecord")
+                    println(e.message)
+                }
             }
+            println("Record Screen")
             mMediaRecorder?.setOutputFile(mFileName)
             mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
             mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
@@ -274,14 +283,14 @@ class FlutterScreenRecordingPlugin(
 
     fun joinFiles() {
         Log.d("--FFmpeg", "Joining files")
-        prnt("Joining files")
+        println("Joining files")
         val mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
         val command = "-i $mFileName -i $mAudioFileName -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
         println(command)
         println("Executing FFmpeg command")
         FFmpeg.executeAsync(command, object : ExecuteCallback {
             override fun apply(executionId: Long, returnCode: Int) {
-                if (returnCode == RETURN_CODE_SUCCESS) {
+                if (returnCode == 1) {
                     val file = File(mFileName)
                     if (file.exists()) {
                         file.delete()
