@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screen_recording/flutter_screen_recording.dart';
-import 'package:quiver/async.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:quiver/async.dart';
 
 void main() => runApp(MyApp());
 
@@ -97,11 +97,8 @@ class _MyAppState extends State<MyApp> {
   startScreenRecord(bool audio) async {
     bool start = false;
 
-    if (audio) {
-      start = await FlutterScreenRecording.startRecordScreenAndAudio("Title");
-    } else {
-      start = await FlutterScreenRecording.startRecordScreen("Title");
-    }
+    start = await FlutterScreenRecording.startRecordScreen("Title",
+        micAudio: audio);
 
     if (start) {
       setState(() => recording = !recording);
