@@ -10,8 +10,8 @@ class FlutterScreenRecording {
     String name, {
     String? titleNotification,
     String? messageNotification,
-    bool? micAudio,
-    bool? internalAudio,
+    bool micAudio = false,
+    bool internalAudio = false,
   }) async {
     if (titleNotification == null) {
       titleNotification = "";
