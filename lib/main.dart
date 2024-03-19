@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
     bool start = false;
 
     start = await FlutterScreenRecording.startRecordScreen("Title",
-        micAudio: audio);
+        titleNotification: "Notification title", micAudio: audio);
 
     if (start) {
       setState(() => recording = !recording);

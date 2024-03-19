@@ -91,7 +91,7 @@ packages:
     description:
       path: "."
       ref: solo_screen_recorder
-      resolved-ref: "13d0aa39b996d936cb346bf80df017a407d42f21"
+      resolved-ref: "77602504560702d69bf63b46d524598e914cbabd"
       url: "https://github.com/Eduardo-Mateus-Da-Costa/flutter_screen_recording.git"
     source: git
     version: "2.0.9"
