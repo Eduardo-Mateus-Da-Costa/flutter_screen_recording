@@ -14,6 +14,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
   var videoWriterInput: AVAssetWriterInput?
   var nameVideo: String = ""
   var recordAudio: Bool = false
+  var recordInternalAudio: Bool = false
   var myResult: FlutterResult?
   let screenSize = UIScreen.main.bounds
 
@@ -41,6 +42,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
       }
 
       self.recordAudio = (args?["audio"] as? Bool)!
+      self.recordInternalAudio = (args?["internalAudio"] as? Bool)!
       self.nameVideo = (args?["name"] as? String)! + ".mp4"
       startRecording()
 
@@ -82,7 +84,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
       var codec = AVVideoCodecJPEG
 
-      if recordAudio {
+      if recordAudio || recordInternalAudio {
         codec = AVVideoCodecH264
       }
 
@@ -96,7 +98,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         ],
       ]
 
-      if recordAudio {
+      if recordAudio || recordInternalAudio {
 
         let audioOutputSettings: [String: Any] = [
           AVNumberOfChannelsKey: 2,
@@ -124,7 +126,6 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         RPScreenRecorder.shared().isMicrophoneEnabled = true
       } else {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
-
       }
 
       RPScreenRecorder.shared().startCapture(
@@ -167,6 +168,17 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 if self.recordAudio {
                   if self.audioInput.isReadyForMoreMediaData {
                     // print("audioMic data added")
+                    if self.audioInput.append(cmSampleBuffer) == false {
+                      print(" we have a problem writing audio")
+                      self.myResult!(false)
+                    }
+                  }
+                }
+
+               case RPSampleBufferType.audioApp:
+                if self.recordInternalAudio {
+                  if self.audioInput.isReadyForMoreMediaData {
+                    // print("audioApp data added")
                     if self.audioInput.append(cmSampleBuffer) == false {
                       print(" we have a problem writing audio")
                       self.myResult!(false)
