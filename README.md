@@ -1,51 +1,16 @@
-# flutter_screen_recording
+# flutter_screen_recording_example
 
-A new Flutter plugin for record the screen. This plug-in requires Android SDK 21+ and iOS 10+
+Demonstrates how to use the flutter_screen_recording plugin.
 
 ## Getting Started
 
-This plugin can be used for record the screen on Android and iOS devices.
+This project is a starting point for a Flutter application.
 
-1. For start the recording
+A few resources to get you started if this is your first Flutter project:
 
-```dart
-bool started = FlutterScreenRecording.startRecordScreen(videoName);
-```
+- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-Or
-
-```dart
-bool started = FlutterScreenRecording.startRecordScreenAndAudio(videoName);
-```
-
-2. For stop the recording
-
-```dart
-String path = FlutterScreenRecording.stopRecordScreen;
-```
-
-## Android
-
-Flutter_Screen_Recorder do not request permissions necessary. You can use [Permission_handler](https://pub.dev/packages/permission_handler), a permissions plugin for Flutter.
-Require and add the following permissions in your manifest:
-
-```java
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.RECORD_AUDIO" />
-```
-
-In the last Android version is requiered use a foreground service for record the screen, we added the [flutter foreground plugin](https://pub.dev/packages/flutter_foreground_plugin).
-
-## iOS
-
-You only need add the permission message on the Info.plist
-
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Save video in gallery</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Save audio in video</string>
-
-## WEB
-
-Just use it
+For help getting started with Flutter, view our
+[online documentation](https://flutter.dev/docs), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
