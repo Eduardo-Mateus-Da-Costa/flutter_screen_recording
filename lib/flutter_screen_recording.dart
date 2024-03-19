@@ -14,7 +14,8 @@ class FlutterScreenRecording {
     bool internalAudio = false,
   }) async {
     if (titleNotification == null) {
-      titleNotification = "";
+      titleNotification = name;
+      if (titleNotification == "") titleNotification = "Recording";
     }
     if (messageNotification == null) {
       messageNotification = "";
