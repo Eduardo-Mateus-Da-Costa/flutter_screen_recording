@@ -9,29 +9,18 @@ class MethodChannelFlutterScreenRecording
   static const MethodChannel _channel =
       const MethodChannel('flutter_screen_recording');
 
+  /// to capture internal audio you need CAPTURE_AUDIO_OUTPUT permission
   Future<bool> startRecordScreen(
     String name, {
     String notificationTitle = "",
     String notificationMessage = "",
+    bool internalAudio = false,
+    bool micAudio = false,
   }) async {
     final bool start = await _channel.invokeMethod('startRecordScreen', {
       "name": name,
-      "audio": false,
-      "title": notificationTitle,
-      "message": notificationMessage,
-    });
-    return start;
-  }
-
-  Future<bool> startRecordScreenAndAudio(
-    String name, {
-    String notificationTitle = "",
-    String notificationMessage = "",
-  }) async {
-    final bool start = await _channel.invokeMethod('startRecordScreen', {
-      "name": name,
-      "audio": false,
-      "internalaudio": true,
+      "audio": micAudio,
+      "internalaudio": internalAudio,
       "title": notificationTitle,
       "message": notificationMessage,
     });
