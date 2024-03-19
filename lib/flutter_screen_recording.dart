@@ -6,8 +6,13 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_screen_recording_platform_interface/flutter_screen_recording_platform_interface.dart';
 
 class FlutterScreenRecording {
-  static Future<bool> startRecordScreen(String name,
-      {String? titleNotification, String? messageNotification}) async {
+  static Future<bool> startRecordScreen(
+    String name, {
+    String? titleNotification,
+    String? messageNotification,
+    bool? micAudio,
+    bool? internalAudio,
+  }) async {
     if (titleNotification == null) {
       titleNotification = "";
     }
@@ -21,20 +26,10 @@ class FlutterScreenRecording {
       name,
       notificationTitle: titleNotification,
       notificationMessage: messageNotification,
+      micAudio: micAudio,
+      internalAudio: internalAudio,
     );
 
-    return start;
-  }
-
-  static Future<bool> startRecordScreenAndAudio(String name,
-      {String? titleNotification, String? messageNotification}) async {
-    //await _maybeStartFGS(titleNotification, messageNotification);
-    final bool start =
-        await FlutterScreenRecordingPlatform.instance.startRecordScreenAndAudio(
-      name,
-      notificationTitle: titleNotification ?? "",
-      notificationMessage: messageNotification ?? "",
-    );
     return start;
   }
 
