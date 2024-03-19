@@ -25,17 +25,14 @@ class WebFlutterScreenRecording extends FlutterScreenRecordingPlatform {
     String name, {
     String notificationTitle = "",
     String notificationMessage = "",
+    bool micAudio = false,
+    bool internalAudio = false,
   }) async {
-    return _record(name, true, false);
-  }
-
-  @override
-  Future<bool> startRecordScreenAndAudio(
-    String name, {
-    String notificationTitle = "",
-    String notificationMessage = "",
-  }) async {
-    return _record(name, true, true);
+    if (internalAudio) {
+      throw UnimplementedError(
+          "Internal audio recording is not supported on the web");
+    }
+    return _record(name, true, micAudio);
   }
 
   Future<bool> _record(String name, bool recordVideo, bool recordAudio) async {
