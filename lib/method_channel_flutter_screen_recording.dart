@@ -30,7 +30,7 @@ class MethodChannelFlutterScreenRecording
   }) async {
     final bool start = await _channel.invokeMethod('startRecordScreen', {
       "name": name,
-      "audio": true,
+      "audio": false,
       "internalAudio": true,
       "title": notificationTitle,
       "message": notificationMessage,
