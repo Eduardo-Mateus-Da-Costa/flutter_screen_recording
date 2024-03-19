@@ -182,60 +182,130 @@ class FlutterScreenRecordingPlugin(
         println("$mDisplayWidth x $mDisplayHeight")
     }
 
+//    fun startRecordScreen() {
+//        try {
+//            val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
+//            ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
+//            try {
+//                mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
+//                mFileName += "/$videoName.mp4"
+//                mAudioFileName = mFileName?.replace(".mp4", ".mp3")
+//            } catch (e: IOException) {
+//                println("Error creating name")
+//                return
+//            }
+//            mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+//            if (recordAudio!!) {
+//                println("Record Audio")
+//                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
+//                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//            } else {
+//                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+//            }
+//            if (recordInternalAudio!!) {
+//                println("Record Internal Audio")
+//                try{
+//                    var mAudioFormat = AudioFormat.Builder()
+//                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+//                            .setSampleRate(8000)
+//                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+//                            .build()
+//                    var mAudioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+//                            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+//                            .build()
+//                    mAudioRecord = AudioRecord.Builder().setAudioFormat(mAudioFormat)
+//                            .setAudioPlaybackCaptureConfig(mAudioPlaybackCaptureConfig)
+//                            .build()
+//                }catch (e: Exception){
+//                    println("Error AudioRecord")
+//                    println(e.message)
+//                }
+//            }
+//            println("Record Screen")
+//            mMediaRecorder?.setOutputFile(mFileName)
+//            mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
+//            mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+//            mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
+//            mMediaRecorder?.setVideoFrameRate(30)
+//
+//            mMediaRecorder?.prepare()
+//            mMediaRecorder?.start()
+//            mAudioRecord?.startRecording()
+//        } catch (e: IOException) {
+//            Log.d("--INIT-RECORDER", e.message+"")
+//            println("Error startRecordScreen")
+//            println(e.message)
+//        }
+//    }
+
+
     fun startRecordScreen() {
         try {
             val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
             ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
-            try {
-                mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
-                mFileName += "/$videoName.mp4"
-                mAudioFileName = mFileName?.replace(".mp4", ".mp3")
-            } catch (e: IOException) {
-                println("Error creating name")
-                return
-            }
-            mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            if (recordAudio!!) {
-                println("Record Audio")
-                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
-                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            } else {
-                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            }
-            if (recordInternalAudio!!) {
-                println("Record Internal Audio")
-                try{
-                    var mAudioFormat = AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(8000)
-                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                            .build()
-                    var mAudioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
-                            .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                            .build()
-                    mAudioRecord = AudioRecord.Builder().setAudioFormat(mAudioFormat)
-                            .setAudioPlaybackCaptureConfig(mAudioPlaybackCaptureConfig)
-                            .build()
-                }catch (e: Exception){
-                    println("Error AudioRecord")
-                    println(e.message)
-                }
-            }
-            println("Record Screen")
-            mMediaRecorder?.setOutputFile(mFileName)
-            mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
-            mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
-            mMediaRecorder?.setVideoFrameRate(30)
 
-            mMediaRecorder?.prepare()
-            mMediaRecorder?.start()
-            mAudioRecord?.startRecording()
-        } catch (e: IOException) {
-            Log.d("--INIT-RECORDER", e.message+"")
-            println("Error startRecordScreen")
-            println(e.message)
+        } catch (e: Exception) {
+            Log.e("--INIT-RECORDER", "Error starting screen capture intent: ${e.message}")
+            return
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
+                    mFileName += "/$videoName.mp4"
+                    mAudioFileName = mFileName?.replace(".mp4", ".mp3")
+                } catch (e: IOException) {
+                    Log.e("--INIT-RECORDER", "Error creating file name: ${e.message}")
+                    return
+                }
+
+                mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+                if (recordAudio!!) {
+                    // Se a gravação de áudio do microfone estiver habilitada, configura o gravador de áudio
+                    mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+                    mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                }
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                mMediaRecorder?.setOutputFile(mFileName)
+                mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
+                mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
+                mMediaRecorder?.setVideoFrameRate(30)
+
+                if (recordInternalAudio!!) {
+                    try {
+                        val audioFormat = AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(8000)
+                                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                                .build()
+
+                        val audioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+                                .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+                                .build()
+
+                        mAudioRecord = AudioRecord.Builder()
+                                .setAudioFormat(audioFormat)
+                                .setAudioPlaybackCaptureConfig(audioPlaybackCaptureConfig)
+                                .build()
+                        mAudioRecord?.startRecording()
+
+                    } catch (e: Exception) {
+                        Log.e("--INIT-RECORDER", "Error starting internal audio recording: ${e.message}")
+                        return
+                    }
+                }
+                mMediaRecorder?.prepare()
+                mMediaRecorder?.start()
+            } else {
+                Log.e("--INIT-RECORDER", "Screen capture permission denied")
+            }
         }
     }
 
