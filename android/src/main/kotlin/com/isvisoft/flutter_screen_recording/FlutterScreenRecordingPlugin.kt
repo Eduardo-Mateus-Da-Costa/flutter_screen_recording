@@ -203,6 +203,7 @@ class FlutterScreenRecordingPlugin(
             }
             if (recordInternalAudio!!) {
                 println("Record Internal Audio")
+                try{
                 mAudioRecord = AudioRecord.Builder().setAudioFormat(
                         AudioFormat.Builder()
                                 .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -216,7 +217,12 @@ class FlutterScreenRecordingPlugin(
                                 .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
                                 .build())
                         .build()
+                }catch (e: Exception){
+                    println("Error AudioRecord")
+                    println(e.message)
+                }
             }
+            println("Record Screen")
             mMediaRecorder?.setOutputFile(mFileName)
             mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
             mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
