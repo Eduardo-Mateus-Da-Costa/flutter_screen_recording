@@ -191,6 +191,7 @@ class FlutterScreenRecordingPlugin(
             }
             mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             if (recordAudio!!) {
+                println("Record Audio")
                 mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
@@ -198,6 +199,7 @@ class FlutterScreenRecordingPlugin(
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             }
             if (recordInternalAudio!!) {
+                println("Record Internal Audio")
                 mAudioRecord = AudioRecord.Builder().setAudioFormat(
                         AudioFormat.Builder()
                                 .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -231,7 +233,7 @@ class FlutterScreenRecordingPlugin(
     }
 
 
-    private fun startAudioSave() {
+    fun startAudioSave() {
         val file = File(mAudioFileName)
         if (file.exists()) {
             file.delete()
@@ -239,8 +241,10 @@ class FlutterScreenRecordingPlugin(
         val buffer = ByteArray(1024)
         val fileOutputStream = FileOutputStream(mAudioFileName)
         while (mAudioRecord?.read(buffer, 0, buffer.size)!! > 0) {
+            println("Buffer : $buffer")
             fileOutputStream.write(buffer)
         }
+        println("startAudioSave success")
         fileOutputStream.close()
     }
 
@@ -249,8 +253,11 @@ class FlutterScreenRecordingPlugin(
             println("stopRecordScreen")
             mAudioRecord?.stop()
             mMediaRecorder?.stop()
-            startAudioSave()
-            mAudioRecord?.release()
+            if (recordInternalAudio!!){
+                println("stopRecordScreen startAudioSave")
+                startAudioSave()
+                mAudioRecord?.release()
+            }
             mMediaRecorder?.reset()
             joinFiles()
             println("stopRecordScreen success")
@@ -265,11 +272,13 @@ class FlutterScreenRecordingPlugin(
         }
     }
 
-    private fun joinFiles() {
+    fun joinFiles() {
         Log.d("--FFmpeg", "Joining files")
+        prnt("Joining files")
         val mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
         val command = "-i $mFileName -i $mAudioFileName -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
         println(command)
+        println("Executing FFmpeg command")
         FFmpeg.executeAsync(command, object : ExecuteCallback {
             override fun apply(executionId: Long, returnCode: Int) {
                 if (returnCode == RETURN_CODE_SUCCESS) {
@@ -285,8 +294,9 @@ class FlutterScreenRecordingPlugin(
                     if (fileMerge.exists()) {
                         fileMerge.renameTo(File(mFileName))
                     }
-                    _result.success(mFileName)
+                    println("Joining files success")
                 } else {
+                    println("Joining files error")
                     throw Exception("Error merging files $returnCode")
                 }
             }
