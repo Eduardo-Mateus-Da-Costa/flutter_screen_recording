@@ -79,7 +79,6 @@ class FlutterScreenRecordingPlugin(
                 mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
                 mVirtualDisplay = createVirtualDisplay()
                 _result.success(true)
-                startRecord()
                 return true
             } else {
                 _result.success(false)
@@ -183,29 +182,30 @@ class FlutterScreenRecordingPlugin(
         println("$mDisplayWidth x $mDisplayHeight")
     }
 
-    fun startRecord() {
+    fun startRecordScreen() {
         try {
-            mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
-            mFileName += "/$videoName.mp4"
-            mAudioFileName = mFileName?.replace(".mp4", ".mp3")
-        } catch (e: IOException) {
-            println("Error creating name")
-            return
-        }
-        mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-        if (recordAudio!!) {
-            println("Record Audio")
-            mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        } else {
-            mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        }
-        if (recordInternalAudio!!) {
-            println("Record Internal Audio")
-            mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
-            mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            try {
+                mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
+                mFileName += "/$videoName.mp4"
+                mAudioFileName = mFileName?.replace(".mp4", ".mp3")
+            } catch (e: IOException) {
+                println("Error creating name")
+                return
+            }
+            mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            if (recordAudio!!) {
+                println("Record Audio")
+                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            } else {
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            }
+            if (recordInternalAudio!!) {
+                println("Record Internal Audio")
+                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 //            try{
 //                var mAudioFormat = AudioFormat.Builder()
 //                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -222,22 +222,17 @@ class FlutterScreenRecordingPlugin(
 //                println("Error AudioRecord")
 //                println(e.message)
 //            }
-        }
-        println("Record Screen")
-        mMediaRecorder?.setOutputFile(mFileName)
-        mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
-        mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-        mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
-        mMediaRecorder?.setVideoFrameRate(30)
+            }
+            println("Record Screen")
+            mMediaRecorder?.setOutputFile(mFileName)
+            mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
+            mMediaRecorder?.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            mMediaRecorder?.setVideoEncodingBitRate(5 * mDisplayWidth * mDisplayHeight)
+            mMediaRecorder?.setVideoFrameRate(30)
 
-        mMediaRecorder?.prepare()
-        mMediaRecorder?.start()
+            mMediaRecorder?.prepare()
+            mMediaRecorder?.start()
 //        mAudioRecord?.startRecording()
-    }
-
-
-    fun startRecordScreen() {
-        try {
             val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
             ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
 
@@ -245,6 +240,7 @@ class FlutterScreenRecordingPlugin(
             Log.e("--INIT-RECORDER", "Error starting screen capture intent: ${e.message}")
             return
         }
+
     }
 
 
