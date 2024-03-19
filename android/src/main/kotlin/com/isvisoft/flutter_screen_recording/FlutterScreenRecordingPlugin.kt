@@ -203,22 +203,25 @@ class FlutterScreenRecordingPlugin(
         }
         if (recordInternalAudio!!) {
             println("Record Internal Audio")
-            try{
-                var mAudioFormat = AudioFormat.Builder()
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(8000)
-                        .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                        .build()
-                var mAudioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
-                        .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                        .build()
-                mAudioRecord = AudioRecord.Builder().setAudioFormat(mAudioFormat)
-                        .setAudioPlaybackCaptureConfig(mAudioPlaybackCaptureConfig)
-                        .build()
-            }catch (e: Exception){
-                println("Error AudioRecord")
-                println(e.message)
-            }
+            mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
+            mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+//            try{
+//                var mAudioFormat = AudioFormat.Builder()
+//                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+//                        .setSampleRate(8000)
+//                        .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+//                        .build()
+//                var mAudioPlaybackCaptureConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+//                        .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+//                        .build()
+//                mAudioRecord = AudioRecord.Builder().setAudioFormat(mAudioFormat)
+//                        .setAudioPlaybackCaptureConfig(mAudioPlaybackCaptureConfig)
+//                        .build()
+//            }catch (e: Exception){
+//                println("Error AudioRecord")
+//                println(e.message)
+//            }
         }
         println("Record Screen")
         mMediaRecorder?.setOutputFile(mFileName)
@@ -229,7 +232,7 @@ class FlutterScreenRecordingPlugin(
 
         mMediaRecorder?.prepare()
         mMediaRecorder?.start()
-        mAudioRecord?.startRecording()
+//        mAudioRecord?.startRecording()
     }
 
 
@@ -263,15 +266,15 @@ class FlutterScreenRecordingPlugin(
     fun stopRecordScreen() {
         try {
             println("stopRecordScreen")
-            mAudioRecord?.stop()
+//            mAudioRecord?.stop()
             mMediaRecorder?.stop()
-            if (recordInternalAudio!!){
-                println("stopRecordScreen startAudioSave")
-                startAudioSave()
-                mAudioRecord?.release()
-            }
+//            if (recordInternalAudio!!){
+//                println("stopRecordScreen startAudioSave")
+//                startAudioSave()
+//                mAudioRecord?.release()
+//            }
             mMediaRecorder?.reset()
-            joinFiles()
+//            joinFiles()
             println("stopRecordScreen success")
 
         } catch (e: Exception) {
@@ -343,7 +346,7 @@ class FlutterScreenRecordingPlugin(
     inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
             mMediaRecorder?.reset()
-            mAudioRecord?.release()
+//            mAudioRecord?.release()
             mMediaProjection = null
             stopScreenSharing()
         }
