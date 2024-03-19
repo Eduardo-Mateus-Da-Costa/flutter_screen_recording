@@ -1,4 +1,4 @@
-package android.src.main.kotlin.com.isvisoft.flutter_screen_recording
+package src.main.kotlin.com.isvisoft.flutter_screen_recording
 
 import android.app.Activity
 import android.content.Context
