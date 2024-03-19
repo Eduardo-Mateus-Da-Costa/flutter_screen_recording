@@ -7,6 +7,8 @@ import android.content.res.Configuration
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
+import android.media.AudioPlaybackCaptureConfiguration
+import android.media.AudioRecord
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
@@ -39,6 +41,7 @@ class FlutterScreenRecordingPlugin(
     var mMediaProjection: MediaProjection? = null
     var mMediaProjectionCallback: MediaProjectionCallback? = null
     var mVirtualDisplay: VirtualDisplay? = null
+    var mAudioRecord: AudioRecord? = null
     var mDisplayWidth: Int = 1280
     var mDisplayHeight: Int = 800
     var videoName: String? = ""
@@ -92,7 +95,7 @@ class FlutterScreenRecordingPlugin(
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
                 } else {
                     @Suppress("DEPRECATION")
@@ -181,17 +184,30 @@ class FlutterScreenRecordingPlugin(
                 return
             }
             mMediaRecorder?.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            if (recordAudio!! || recordInternalAudio!!) {
-                if (recordInternalAudio!!) {
-                    mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
-                }
-                if (recordAudio!!) {
-                    mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
-                }
+            if (recordAudio!!) {
+                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.MPEG_4);
+                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             } else {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            }
+            if (recordInternalAudio!!) {
+                mAudioRecord = AudioRecord.Builder().setAudioFormat(
+                        AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(44100)
+                                .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
+                                .build()
+                )
+                        .setAudioPlaybackCaptureConfig(AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
+                                .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
+                                .addMatchingUsage(AudioAttributes.USAGE_GAME)
+                                .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
+                                .build())
+                        .build()
+                mMediaRecorder?.setAudioSource(mAudioRecord?.getAudioSource())
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             }
             mMediaRecorder?.setOutputFile(mFileName)
             mMediaRecorder?.setVideoSize(mDisplayWidth, mDisplayHeight)
@@ -213,6 +229,7 @@ class FlutterScreenRecordingPlugin(
     fun stopRecordScreen() {
         try {
             println("stopRecordScreen")
+            mAudioRecord?.stop()
             mMediaRecorder?.stop()
             mMediaRecorder?.reset()
             println("stopRecordScreen success")
