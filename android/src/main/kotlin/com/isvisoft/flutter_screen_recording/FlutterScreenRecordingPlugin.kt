@@ -198,8 +198,6 @@ class FlutterScreenRecordingPlugin(
                 mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            } else {
-                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             }
             if (recordInternalAudio!!) {
                 println("Record Internal Audio")
@@ -222,6 +220,9 @@ class FlutterScreenRecordingPlugin(
 //                println("Error AudioRecord")
 //                println(e.message)
 //            }
+            }
+            if (!recordAudio!! && !recordInternalAudio!!) {
+                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             }
             println("Record Screen")
             mMediaRecorder?.setOutputFile(mFileName)
