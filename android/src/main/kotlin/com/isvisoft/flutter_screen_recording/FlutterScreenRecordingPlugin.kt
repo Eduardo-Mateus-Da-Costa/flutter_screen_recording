@@ -215,21 +215,6 @@ class FlutterScreenRecordingPlugin(
     }
 
 
-    fun startAudioSave() {
-        val file = File(mAudioFileName)
-        if (file.exists()) {
-            file.delete()
-        }
-        val buffer = ByteArray(1024)
-        val fileOutputStream = FileOutputStream(mAudioFileName)
-        while (mAudioRecord?.read(buffer, 0, buffer.size)!! > 0) {
-            println("Buffer : $buffer")
-            fileOutputStream.write(buffer)
-        }
-        println("startAudioSave success")
-        fileOutputStream.close()
-    }
-
     fun stopRecordScreen() {
         try {
             println("stopRecordScreen")
