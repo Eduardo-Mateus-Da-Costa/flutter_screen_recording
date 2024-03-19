@@ -33,6 +33,8 @@ abstract class FlutterScreenRecordingPlatform extends PlatformInterface {
     String name, {
     String notificationTitle = "",
     String notificationMessage = "",
+    bool internalAudio = false,
+    bool micAudio = false,
   }) {
     throw UnimplementedError();
   }
