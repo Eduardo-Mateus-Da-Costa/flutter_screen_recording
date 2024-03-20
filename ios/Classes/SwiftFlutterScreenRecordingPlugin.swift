@@ -42,7 +42,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
       }
 
       self.recordAudio = (args?["audio"] as? Bool)!
-      self.recordInternalAudio = (args?["internalAudio"] as? Bool)!
+      self.recordInternalAudio = (args?["internalaudio"] as? Bool)!
       self.nameVideo = (args?["name"] as? String)! + ".mp4"
       startRecording()
 
