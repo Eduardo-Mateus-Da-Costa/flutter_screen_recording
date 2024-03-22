@@ -336,7 +336,7 @@ class FlutterScreenRecordingPlugin(
                 }
             }
             var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
-            var sampleRate = 8000
+            var sampleRate = 44100
             var channelConfig = AudioFormat.CHANNEL_IN_MONO
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
             var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
@@ -362,7 +362,12 @@ class FlutterScreenRecordingPlugin(
             Thread {
                 while (isRecordingAudio) {
                     var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
-                    fileOutputStream.write(audioData, 0, numberOfReadBytes)
+                    if (numberOfReadBytes < 0) {
+                        val emptyBuffer = ByteArray(minBufferSize)
+                        fileOutputStream.write(emptyBuffer)
+                    }else {
+                        fileOutputStream.write(audioData, 0, numberOfReadBytes)
+                    }
                 }
                 fileOutputStream.close()
                 audioRecord?.stop()
