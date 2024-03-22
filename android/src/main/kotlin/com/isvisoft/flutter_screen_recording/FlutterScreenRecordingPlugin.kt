@@ -77,6 +77,7 @@ class FlutterScreenRecordingPlugin(
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
                 mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
+                println("MediaProjection obtained: $mMediaProjection")
                 mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
                 mVirtualDisplay = createVirtualDisplay()
                 _result.success(true)
@@ -184,6 +185,12 @@ class FlutterScreenRecordingPlugin(
     }
 
     fun startRecordScreen() {
+        val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
+        ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
+        while (mMediaProjection == null) {
+            println("Waiting for permission")
+            Thread.sleep(100)
+        }
         try {
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
@@ -225,8 +232,6 @@ class FlutterScreenRecordingPlugin(
             println("Error startRecordScreen")
             e.printStackTrace()
         }
-        val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
-        ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
     }
 
 
@@ -364,6 +369,7 @@ class FlutterScreenRecordingPlugin(
 
     inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
+            audioRecord.reset()
             mMediaRecorder?.reset()
             mMediaProjection = null
             stopScreenSharing()
