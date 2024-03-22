@@ -38,6 +38,8 @@ import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
 import com.arthenica.mobileffmpeg.FFmpegExecution;
 
+import com.github.axet.androidlibrary.lame.SimpleLame
+
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
 ) : MethodCallHandler, PluginRegistry.ActivityResultListener{
@@ -336,15 +338,22 @@ class FlutterScreenRecordingPlugin(
                 file.delete()
             }
             file.createNewFile()
+            var lame = SimpleLame.init(sampleRate, 1, sampleRate, 32)
             var fileOutputStream = FileOutputStream(file)
             isRecordingAudio = true
             audioRecord!!.startRecording()
             Thread {
                 while (isRecordingAudio) {
                     var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
-                    fileOutputStream.write(audioData, 0, numberOfReadBytes)
+                    var encodedData = SimpleLame.encode(audioData, audioData, numberOfReadBytes)
+                    if (encodedData > 0) {
+                        fileOutputStream.write(audioData, 0, encodedData)
+                    }
                 }
                 fileOutputStream.close()
+                audioRecord?.stop()
+                audioRecord?.release()
+                SimpleLame.close(lame)
             }.start()
         } catch (e: Exception) {
             println("Error startRecordAudio")
@@ -357,8 +366,6 @@ class FlutterScreenRecordingPlugin(
 
     fun stopRecordAudio() {
         isRecordingAudio = false
-        audioRecord?.stop()
-        audioRecord?.release()
     }
 
 
