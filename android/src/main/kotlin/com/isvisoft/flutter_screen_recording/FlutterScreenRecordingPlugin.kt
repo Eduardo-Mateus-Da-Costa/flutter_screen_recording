@@ -28,6 +28,14 @@ import java.io.IOException
 import android.media.MediaRecorder.AudioSource
 import com.foregroundservice.ForegroundService
 
+import android.media.AudioFormat
+import android.media.AudioRecord
+import java.io.FileOutputStream
+android.media.AudioPlaybackCaptureConfiguration
+
+import com.arthenica.mobileffmpeg.ExecuteCallback;
+import com.arthenica.mobileffmpeg.FFmpeg;
+import com.arthenica.mobileffmpeg.FFmpegExecution;
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -45,6 +53,9 @@ class FlutterScreenRecordingPlugin(
     var mFileName: String? = ""
     var recordAudio: Boolean? = false;
     var recordInternalAudio: Boolean? = false;
+    var isRecordingAudio: Boolean = false;
+    var audioPath: String? = ""
+    var audioRecord: AudioRecord? = null
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
@@ -122,7 +133,7 @@ class FlutterScreenRecordingPlugin(
             try {
                 ForegroundService.stopService(registrar.context())
                 if (mMediaRecorder != null) {
-                    stopRecordScreen()
+                    stopRecord()
                     result.success(mFileName)
                 } else {
                     result.success("")
@@ -189,9 +200,9 @@ class FlutterScreenRecordingPlugin(
             }
             if (recordInternalAudio!!) {
                 println("Record Internal Audio")
-                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
-                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//                mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.REMOTE_SUBMIX);
+//                mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//                mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             }
             if (!recordAudio!! && !recordInternalAudio!!) {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -204,31 +215,124 @@ class FlutterScreenRecordingPlugin(
             mMediaRecorder?.setVideoFrameRate(30)
 
             mMediaRecorder?.prepare()
+            if (recordInternalAudio!!) {
+                startRecordAudio()
+            }
             mMediaRecorder?.start()
         } catch (e: IOException) {
             Log.d("--INIT-RECORDER", e.message+"")
             println("Error startRecordScreen")
-            println(e.message)
+            e.printStackTrace()
         }
         val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
         ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
     }
 
 
-    fun stopRecordScreen() {
+    fun stopRecord {
         try {
             println("stopRecordScreen")
+            if (recordInternalAudio!!) {
+                stopRecordAudio()
+            }
             mMediaRecorder?.stop()
             mMediaRecorder?.reset()
+            if (recordInternalAudio!!) {
+                joinFiles()
+            }
             println("stopRecordScreen success")
         } catch (e: Exception) {
             Log.d("--INIT-RECORDER", e.message +"")
             println("stopRecordScreen error")
-            println(e.message)
-
+            e.printStackTrace()
         } finally {
             stopScreenSharing()
         }
+    }
+
+
+    private fun joinFiles() {
+        Log.d("--FFmpeg", "Joining files")
+        val mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
+        val command = "-i $mFileName -i $audioPath -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
+        println(command)
+        try {
+            FFmpeg.executeAsync(command, object : ExecuteCallback {
+                override fun apply(executionId: Long, returnCode: Int) {
+                    if (returnCode == 1) {
+                        val file = File(mFileName)
+                        if (file.exists()) {
+                            file.delete()
+                        }
+                        val fileAudio = File(audioPath!!)
+                        if (fileAudio.exists()) {
+                            fileAudio.delete()
+                        }
+                        val fileMerge = File(mMergeFileName)
+                        if (fileMerge.exists()) {
+                            fileMerge.renameTo(File(mFileName))
+                        }else {
+                            throw Exception("Error merging files")
+                        }
+                    } else {
+                        throw Exception("Error merging files $returnCode")
+                    }
+                }
+            })
+        }catch (e: Exception) {
+            Log.d("--FFmpeg Error", e.message)
+            e.printStackTrace()
+            throw e
+        }
+    }
+
+
+
+    fun startRecordAudio() {
+        try {
+            val audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
+            val sampleRate = 8000
+            val channelConfig = AudioFormat.CHANNEL_IN_MONO
+            val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+            audioRecord = AudioRecord.Builder()
+                    .setAudioPlaybackCaptureConfig(audioConfig)
+                    .setAudioFormat(AudioFormat.Builder()
+                            .setEncoding(audioFormat)
+                            .setSampleRate(sampleRate)
+                            .setChannelMask(channelConfig)
+                            .build())
+                    .setBufferSizeInBytes(minBufferSize)
+                    .build()
+            val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+            val audioData = ByteArray(minBufferSize)
+            audioPath = registrar.context().getExternalCacheDir()?.getAbsolutePath() + "/" + videoName + ".pcm"
+            val file = File(audioPath!!)
+            if (file.exists()) {
+                file.delete()
+            }
+            file.createNewFile()
+            val fileOutputStream = FileOutputStream(file)
+            isRecordingAudio = true
+            audioRecord.startRecording()
+            Thead {
+                while (isRecordingAudio) {
+                    val numberOfReadBytes = audioRecord.read(audioData, 0, minBufferSize)
+                    fileOutputStream.write(audioData, 0, numberOfReadBytes)
+                }
+            }.start()
+        } catch (e: Exception) {
+            println("Error startRecordAudio")
+            println(e.message)
+            e.printStackTrace()
+            throw e
+        }
+    }
+
+
+    fun stopRecordAudio() {
+        isRecordingAudio = false
+        audioRecord?.stop()
+        audioRecord?.release()
     }
 
 
