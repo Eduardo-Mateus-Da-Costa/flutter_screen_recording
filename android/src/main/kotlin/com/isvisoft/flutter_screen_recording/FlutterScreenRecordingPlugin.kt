@@ -43,8 +43,6 @@ import java.io.DataOutputStream
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.io.IOException
-import java.io.File
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -337,7 +335,7 @@ class FlutterScreenRecordingPlugin(
             writeShort(output, 1.toShort()) // audio format (1 = PCM)
             writeShort(output, 1.toShort()) // number of channels
             writeInt(output, 44100) // sample rate
-            writeInt(output, RECORDER_SAMPLERATE * 2) // byte rate
+            writeInt(output, 8000 * 2) // byte rate
             writeShort(output, 2.toShort()) // block align
             writeShort(output, 16.toShort()) // bits per sample
             writeString(output, "data") // subchunk 2 id
@@ -385,22 +383,22 @@ class FlutterScreenRecordingPlugin(
 
     @kotlin.Throws(IOException::class)
     private fun writeInt(output: DataOutputStream?, value: Int) {
-        output.write(value shr 0)
-        output.write(value shr 8)
-        output.write(value shr 16)
-        output.write(value shr 24)
+        output?.write(value shr 0)
+        output?.write(value shr 8)
+        output?.write(value shr 16)
+        output?.write(value shr 24)
     }
 
     @kotlin.Throws(IOException::class)
     private fun writeShort(output: DataOutputStream?, value: Short) {
-        output.write(value.toInt() shr 0)
-        output.write(value.toInt() shr 8)
+        output?.write(value.toInt() shr 0)
+        output?.write(value.toInt() shr 8)
     }
 
     @kotlin.Throws(IOException::class)
     private fun writeString(output: DataOutputStream?, value: String) {
         for (i in 0 until value.length()) {
-            output.write(value.charAt(i))
+            output?.write(value[i])
         }
     }
 
