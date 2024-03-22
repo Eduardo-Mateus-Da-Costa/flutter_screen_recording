@@ -230,7 +230,7 @@ class FlutterScreenRecordingPlugin(
     }
 
 
-    fun stopRecord {
+    fun stopRecord() {
         try {
             println("stopRecordScreen")
             if (recordInternalAudio!!) {
@@ -281,7 +281,7 @@ class FlutterScreenRecordingPlugin(
                 }
             })
         }catch (e: Exception) {
-            Log.d("--FFmpeg Error", e.message)
+            Log.d("--FFmpeg Error", e.message!!)
             e.printStackTrace()
             throw e
         }
@@ -295,6 +295,7 @@ class FlutterScreenRecordingPlugin(
             var sampleRate = 8000
             var channelConfig = AudioFormat.CHANNEL_IN_MONO
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
+            var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
             audioRecord = AudioRecord.Builder()
                     .setAudioPlaybackCaptureConfig(audioConfig)
                     .setAudioFormat(AudioFormat.Builder()
@@ -304,7 +305,6 @@ class FlutterScreenRecordingPlugin(
                             .build())
                     .setBufferSizeInBytes(minBufferSize)
                     .build()
-            var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
             var audioData = ByteArray(minBufferSize)
             audioPath = registrar.context().getExternalCacheDir()?.getAbsolutePath() + "/" + videoName + ".pcm"
             var file = File(audioPath!!)
@@ -314,10 +314,10 @@ class FlutterScreenRecordingPlugin(
             file.createNewFile()
             var fileOutputStream = FileOutputStream(file)
             isRecordingAudio = true
-            audioRecord.startRecording()
+            audioRecord!!.startRecording()
             Thread {
                 while (isRecordingAudio) {
-                    var numberOfReadBytes = audioRecord.read(audioData, 0, minBufferSize)
+                    var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
                     fileOutputStream.write(audioData, 0, numberOfReadBytes)
                 }
             }.start()
