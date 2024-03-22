@@ -330,7 +330,7 @@ class FlutterScreenRecordingPlugin(
                     .setBufferSizeInBytes(minBufferSize)
                     .build()
             var audioData = ByteArray(minBufferSize)
-            audioPath = registrar.context().getExternalCacheDir()?.getAbsolutePath() + "/" + videoName + ".pcm"
+            audioPath = mFileName?.replace(".mp4", ".pcm")
             var file = File(audioPath!!)
             if (file.exists()) {
                 file.delete()
