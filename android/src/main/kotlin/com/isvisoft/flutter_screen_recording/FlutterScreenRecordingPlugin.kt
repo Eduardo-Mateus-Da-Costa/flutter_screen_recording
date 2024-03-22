@@ -291,7 +291,7 @@ class FlutterScreenRecordingPlugin(
 
     fun startRecordAudio() {
         try {
-            var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
+            var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
             var sampleRate = 8000
             var channelConfig = AudioFormat.CHANNEL_IN_MONO
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
