@@ -57,6 +57,7 @@ class FlutterScreenRecordingPlugin(
     var isRecordingAudio: Boolean = false;
     var audioPath: String? = ""
     var audioRecord: AudioRecord? = null
+    var intentData: Intent? = null
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
@@ -73,6 +74,7 @@ class FlutterScreenRecordingPlugin(
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
+        intentData = data
         if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
@@ -305,7 +307,7 @@ class FlutterScreenRecordingPlugin(
         try {
             if (mMediaProjection == null) {
                 try{
-                    mMediaProjection = mProjectionManager?.getMediaProjection(Activity.RESULT_OK, null)
+                    mMediaProjection = mProjectionManager?.getMediaProjection(Activity.RESULT_OK, intentData!!)
                 }catch (e: Exception) {
                     println("Error getMediaProjection")
                     println(e.message)
