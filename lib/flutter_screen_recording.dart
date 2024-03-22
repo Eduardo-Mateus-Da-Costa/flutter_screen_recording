@@ -22,8 +22,7 @@ class FlutterScreenRecording {
     }
 
     await _maybeStartFGS(titleNotification, messageNotification);
-    final bool start =
-        await FlutterScreenRecordingPlatform.instance.startRecordScreen(
+    final bool start = await FlutterScreenRecordingPlatform.instance.startRecordScreen(
       name,
       notificationTitle: titleNotification,
       notificationMessage: messageNotification,
@@ -35,10 +34,12 @@ class FlutterScreenRecording {
   }
 
   static Future<String> get stopRecordScreen async {
-    final String path =
-        await FlutterScreenRecordingPlatform.instance.stopRecordScreen;
+    final String path = await FlutterScreenRecordingPlatform.instance.stopRecordScreen;
     if (!kIsWeb && Platform.isAndroid) {
       FlutterForegroundTask.stopService();
+    }
+    if (path == "") {
+      throw Exception("Error: Stop recording failed.");
     }
     return path;
   }
