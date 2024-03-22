@@ -369,7 +369,7 @@ class FlutterScreenRecordingPlugin(
 
     inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
-            audioRecord.reset()
+            audioRecord?.release()
             mMediaRecorder?.reset()
             mMediaProjection = null
             stopScreenSharing()
