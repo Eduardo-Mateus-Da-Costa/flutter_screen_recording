@@ -398,7 +398,7 @@ class FlutterScreenRecordingPlugin(
     @kotlin.Throws(IOException::class)
     fun writeString(output: DataOutputStream?, value: String) {
         for (i in 0 until value.length) {
-            output?.write(value[i])
+            output?.write(value[i].toInt())
         }
     }
 
