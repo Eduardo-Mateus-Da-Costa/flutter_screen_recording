@@ -77,7 +77,6 @@ class FlutterScreenRecordingPlugin(
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
                 mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
-                println("MediaProjection obtained: $mMediaProjection")
                 mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
                 mVirtualDisplay = createVirtualDisplay()
                 _result.success(true)
@@ -124,7 +123,7 @@ class FlutterScreenRecordingPlugin(
                 videoName = call.argument<String?>("name")
                 recordAudio = call.argument<Boolean?>("audio")
                 recordInternalAudio = call.argument<Boolean?>("internalaudio")
-                startRecordScreen()
+                prepareRecordScreen()
 
             } catch (e: Exception) {
                 println("Error onMethodCall startRecordScreen")
@@ -184,13 +183,7 @@ class FlutterScreenRecordingPlugin(
         println("$mDisplayWidth x $mDisplayHeight")
     }
 
-    fun startRecordScreen() {
-        val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
-        ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
-        while (mMediaProjection == null) {
-            println("Waiting for permission")
-            Thread.sleep(100)
-        }
+    fun prepareRecordScreen() {
         try {
             try {
                 mFileName = registrar.context().getExternalCacheDir()?.getAbsolutePath()
@@ -223,16 +216,30 @@ class FlutterScreenRecordingPlugin(
             mMediaRecorder?.setVideoFrameRate(30)
 
             mMediaRecorder?.prepare()
+        } catch (e: IOException) {
+            Log.d("--INIT-RECORDER", e.message+"")
+            println("Error prepareRecordScreen")
+            e.printStackTrace()
+        }
+        val permissionIntent = mProjectionManager?.createScreenCaptureIntent()
+        ActivityCompat.startActivityForResult(registrar.activity()!!, permissionIntent!!, SCREEN_RECORD_REQUEST_CODE, null)
+    }
+
+
+    fun startRecord() {
+        try {
             if (recordInternalAudio!!) {
                 startRecordAudio()
             }
             mMediaRecorder?.start()
-        } catch (e: IOException) {
-            Log.d("--INIT-RECORDER", e.message+"")
-            println("Error startRecordScreen")
+        }catch (e: Exception) {
+            println("Error startRecord")
+            println(e.message)
             e.printStackTrace()
+            throw e
         }
     }
+
 
 
     fun stopRecord() {
@@ -296,6 +303,16 @@ class FlutterScreenRecordingPlugin(
 
     fun startRecordAudio() {
         try {
+            if (mMediaProjection == null) {
+                try{
+                    mMediaProjection = mProjectionManager?.getMediaProjection(Activity.RESULT_OK, null)
+                }catch (e: Exception) {
+                    println("Error getMediaProjection")
+                    println(e.message)
+                    e.printStackTrace()
+                    throw e
+                }
+            }
             var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
             var sampleRate = 8000
             var channelConfig = AudioFormat.CHANNEL_IN_MONO
@@ -344,6 +361,7 @@ class FlutterScreenRecordingPlugin(
 
     private fun createVirtualDisplay(): VirtualDisplay? {
         try {
+            startRecord()
             return mMediaProjection?.createVirtualDisplay(
                     "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
                     DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
