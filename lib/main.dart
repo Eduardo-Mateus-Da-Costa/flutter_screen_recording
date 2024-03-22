@@ -25,11 +25,6 @@ class _MyAppState extends State<MyApp> {
     if (await Permission.microphone.request().isDenied) {
       await Permission.microphone.request();
     }
-    // await PermissionHandler().requestPermissions([
-    //   PermissionGroup.storage,
-    //   PermissionGroup.photos,
-    //   PermissionGroup.microphone,
-    // ]);
   }
 
   @override
@@ -98,7 +93,9 @@ class _MyAppState extends State<MyApp> {
     bool start = false;
 
     start = await FlutterScreenRecording.startRecordScreen("Title",
-        titleNotification: "Notification title", micAudio: audio);
+        titleNotification: "Notification title",
+        micAudio: audio,
+        internalAudio: audio);
 
     if (start) {
       setState(() => recording = !recording);
@@ -108,12 +105,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   stopScreenRecord() async {
-    String path = await FlutterScreenRecording.stopRecordScreen;
-    setState(() {
-      recording = !recording;
-    });
-    print("Opening video");
-    print(path);
-    OpenFile.open(path);
+    try {
+      String path = await FlutterScreenRecording.stopRecordScreen;
+      setState(() {
+        recording = !recording;
+      });
+      print("Opening video");
+      print(path);
+      OpenFile.open(path);
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 }

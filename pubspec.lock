@@ -90,8 +90,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: solo_screen_recorder
-      resolved-ref: "77602504560702d69bf63b46d524598e914cbabd"
+      ref: tests
+      resolved-ref: e2e48d0c04579ad1a5d01725268b568a638f329f
       url: "https://github.com/Eduardo-Mateus-Da-Costa/flutter_screen_recording.git"
     source: git
     version: "2.0.9"
