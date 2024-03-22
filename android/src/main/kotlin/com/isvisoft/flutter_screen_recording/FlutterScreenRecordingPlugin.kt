@@ -310,7 +310,7 @@ class FlutterScreenRecordingPlugin(
 
 
     @kotlin.Throws(IOException::class)
-    private fun rawToWave(rawFile: File, waveFile: File) {
+    fun rawToWave(rawFile: File, waveFile: File) {
         val rawData = ByteArray(rawFile.length() as Int)
         var input: DataInputStream? = null
         try {
@@ -382,7 +382,7 @@ class FlutterScreenRecordingPlugin(
     }
 
     @kotlin.Throws(IOException::class)
-    private fun writeInt(output: DataOutputStream?, value: Int) {
+    fun writeInt(output: DataOutputStream?, value: Int) {
         output?.write(value shr 0)
         output?.write(value shr 8)
         output?.write(value shr 16)
@@ -390,20 +390,20 @@ class FlutterScreenRecordingPlugin(
     }
 
     @kotlin.Throws(IOException::class)
-    private fun writeShort(output: DataOutputStream?, value: Short) {
+    fun writeShort(output: DataOutputStream?, value: Short) {
         output?.write(value.toInt() shr 0)
         output?.write(value.toInt() shr 8)
     }
 
     @kotlin.Throws(IOException::class)
-    private fun writeString(output: DataOutputStream?, value: String) {
-        for (i in 0 until value.length()) {
+    fun writeString(output: DataOutputStream?, value: String) {
+        for (i in 0 until value.length) {
             output?.write(value[i])
         }
     }
 
 
-    private fun convertAudioToWav() {
+    fun convertAudioToWav() {
         var mWavFileName = audioPath?.replace(".pcm", ".wav")
         var file = File(mWavFileName)
         if (file.exists()) {
