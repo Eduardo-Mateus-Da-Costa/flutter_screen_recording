@@ -275,14 +275,14 @@ class FlutterScreenRecordingPlugin(
             FFmpeg.executeAsync(command, object : ExecuteCallback {
                 override fun apply(executionId: Long, returnCode: Int) {
                     if (returnCode == 1) {
-                        var file = File(mFileName)
-                        if (file.exists()) {
-                            file.delete()
-                        }
-                        var fileAudio = File(audioPath!!)
-                        if (fileAudio.exists()) {
-                            fileAudio.delete()
-                        }
+//                        var file = File(mFileName)
+//                        if (file.exists()) {
+//                            file.delete()
+//                        }
+//                        var fileAudio = File(audioPath!!)
+//                        if (fileAudio.exists()) {
+//                            fileAudio.delete()
+//                        }
                         var fileMerge = File(mMergeFileName)
                         if (fileMerge.exists()) {
                             fileMerge.renameTo(File(mFileName))
