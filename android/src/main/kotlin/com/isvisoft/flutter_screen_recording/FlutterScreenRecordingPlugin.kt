@@ -31,7 +31,8 @@ import com.foregroundservice.ForegroundService
 import android.media.AudioFormat
 import android.media.AudioRecord
 import java.io.FileOutputStream
-android.media.AudioPlaybackCaptureConfiguration
+import android.media.AudioPlaybackCaptureConfiguration
+import android.media.AudioAttributes
 
 import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
@@ -253,22 +254,22 @@ class FlutterScreenRecordingPlugin(
 
     private fun joinFiles() {
         Log.d("--FFmpeg", "Joining files")
-        val mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
-        val command = "-i $mFileName -i $audioPath -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
+        var mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
+        var command = "-i $mFileName -i $audioPath -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
         println(command)
         try {
             FFmpeg.executeAsync(command, object : ExecuteCallback {
                 override fun apply(executionId: Long, returnCode: Int) {
                     if (returnCode == 1) {
-                        val file = File(mFileName)
+                        var file = File(mFileName)
                         if (file.exists()) {
                             file.delete()
                         }
-                        val fileAudio = File(audioPath!!)
+                        var fileAudio = File(audioPath!!)
                         if (fileAudio.exists()) {
                             fileAudio.delete()
                         }
-                        val fileMerge = File(mMergeFileName)
+                        var fileMerge = File(mMergeFileName)
                         if (fileMerge.exists()) {
                             fileMerge.renameTo(File(mFileName))
                         }else {
@@ -290,10 +291,10 @@ class FlutterScreenRecordingPlugin(
 
     fun startRecordAudio() {
         try {
-            val audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
-            val sampleRate = 8000
-            val channelConfig = AudioFormat.CHANNEL_IN_MONO
-            val audioFormat = AudioFormat.ENCODING_PCM_16BIT
+            var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
+            var sampleRate = 8000
+            var channelConfig = AudioFormat.CHANNEL_IN_MONO
+            var audioFormat = AudioFormat.ENCODING_PCM_16BIT
             audioRecord = AudioRecord.Builder()
                     .setAudioPlaybackCaptureConfig(audioConfig)
                     .setAudioFormat(AudioFormat.Builder()
@@ -303,20 +304,20 @@ class FlutterScreenRecordingPlugin(
                             .build())
                     .setBufferSizeInBytes(minBufferSize)
                     .build()
-            val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-            val audioData = ByteArray(minBufferSize)
+            var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+            var audioData = ByteArray(minBufferSize)
             audioPath = registrar.context().getExternalCacheDir()?.getAbsolutePath() + "/" + videoName + ".pcm"
-            val file = File(audioPath!!)
+            var file = File(audioPath!!)
             if (file.exists()) {
                 file.delete()
             }
             file.createNewFile()
-            val fileOutputStream = FileOutputStream(file)
+            var fileOutputStream = FileOutputStream(file)
             isRecordingAudio = true
             audioRecord.startRecording()
-            Thead {
+            Thread {
                 while (isRecordingAudio) {
-                    val numberOfReadBytes = audioRecord.read(audioData, 0, minBufferSize)
+                    var numberOfReadBytes = audioRecord.read(audioData, 0, minBufferSize)
                     fileOutputStream.write(audioData, 0, numberOfReadBytes)
                 }
             }.start()
