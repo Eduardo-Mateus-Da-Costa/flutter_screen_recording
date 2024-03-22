@@ -362,9 +362,7 @@ class FlutterScreenRecordingPlugin(
             Thread {
                 while (isRecordingAudio) {
                     var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
-                    if (numberOfReadBytes > 0) {
-                        fileOutputStream.write(audioData, 0, numberOfReadBytes)
-                    }
+                    fileOutputStream.write(audioData, 0, numberOfReadBytes)
                 }
                 fileOutputStream.close()
                 audioRecord?.stop()
