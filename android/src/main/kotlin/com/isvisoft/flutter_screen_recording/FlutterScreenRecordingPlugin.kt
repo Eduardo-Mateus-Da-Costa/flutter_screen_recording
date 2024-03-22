@@ -38,7 +38,13 @@ import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
 import com.arthenica.mobileffmpeg.FFmpegExecution;
 
-import com.github.axet.androidlibrary.lame.SimpleLame
+import java.io.DataInputStream
+import java.io.DataOutputStream
+import java.io.FileInputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.io.IOException
+import java.io.File
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -270,6 +276,7 @@ class FlutterScreenRecordingPlugin(
 
     private fun joinFiles() {
         Log.d("--FFmpeg", "Joining files")
+        convertAudioToWav()
         var mMergeFileName = mFileName?.replace(".mp4", "_merge.mp4")
         var command = "-i $mFileName -i $audioPath -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest $mMergeFileName"
         println(command)
@@ -304,6 +311,122 @@ class FlutterScreenRecordingPlugin(
     }
 
 
+    @kotlin.Throws(IOException::class)
+    private fun rawToWave(rawFile: File, waveFile: File) {
+        val rawData = ByteArray(rawFile.length() as Int)
+        var input: DataInputStream? = null
+        try {
+            input = DataInputStream(FileInputStream(rawFile))
+            input.read(rawData)
+        } finally {
+            if (input != null) {
+                input.close()
+            }
+        }
+
+        var output: DataOutputStream? = null
+        try {
+            output = DataOutputStream(FileOutputStream(waveFile))
+            // WAVE header
+            // see http://ccrma.stanford.edu/courses/422/projects/WaveFormat/
+            writeString(output, "RIFF") // chunk id
+            writeInt(output, 36 + rawData.size) // chunk size
+            writeString(output, "WAVE") // format
+            writeString(output, "fmt ") // subchunk 1 id
+            writeInt(output, 16) // subchunk 1 size
+            writeShort(output, 1.toShort()) // audio format (1 = PCM)
+            writeShort(output, 1.toShort()) // number of channels
+            writeInt(output, 44100) // sample rate
+            writeInt(output, RECORDER_SAMPLERATE * 2) // byte rate
+            writeShort(output, 2.toShort()) // block align
+            writeShort(output, 16.toShort()) // bits per sample
+            writeString(output, "data") // subchunk 2 id
+            writeInt(output, rawData.size) // subchunk 2 size
+            // Audio data (conversion big endian -> little endian)
+            val shorts = ShortArray(rawData.size / 2)
+            ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts)
+            val bytes: ByteBuffer = ByteBuffer.allocate(shorts.size * 2)
+            for (s in shorts) {
+                bytes.putShort(s)
+            }
+
+            output.write(fullyReadFileToBytes(rawFile))
+        } finally {
+            if (output != null) {
+                output.close()
+            }
+        }
+    }
+
+    @kotlin.Throws(IOException::class)
+    fun fullyReadFileToBytes(f: File): ByteArray {
+        val size = f.length() as Int
+        val bytes = ByteArray(size)
+        val tmpBuff = ByteArray(size)
+        val fis: FileInputStream = FileInputStream(f)
+        try {
+            var read: Int = fis.read(bytes, 0, size)
+            if (read < size) {
+                var remain = size - read
+                while (remain > 0) {
+                    read = fis.read(tmpBuff, 0, remain)
+                    System.arraycopy(tmpBuff, 0, bytes, size - remain, read)
+                    remain -= read
+                }
+            }
+        } catch (e: IOException) {
+            throw e
+        } finally {
+            fis.close()
+        }
+
+        return bytes
+    }
+
+    @kotlin.Throws(IOException::class)
+    private fun writeInt(output: DataOutputStream?, value: Int) {
+        output.write(value shr 0)
+        output.write(value shr 8)
+        output.write(value shr 16)
+        output.write(value shr 24)
+    }
+
+    @kotlin.Throws(IOException::class)
+    private fun writeShort(output: DataOutputStream?, value: Short) {
+        output.write(value.toInt() shr 0)
+        output.write(value.toInt() shr 8)
+    }
+
+    @kotlin.Throws(IOException::class)
+    private fun writeString(output: DataOutputStream?, value: String) {
+        for (i in 0 until value.length()) {
+            output.write(value.charAt(i))
+        }
+    }
+
+
+    private fun convertAudioToWav() {
+        var mWavFileName = audioPath?.replace(".pcm", ".wav")
+        var file = File(mWavFileName)
+        if (file.exists()) {
+            file.delete()
+        }
+        try {
+            rawToWave(File(audioPath!!), file)
+            var fileAudio = File(audioPath!!)
+            if (fileAudio.exists()) {
+                fileAudio.delete()
+            }
+            audioPath = mWavFileName
+        } catch (e: Exception) {
+            println("Error convertAudioToWav")
+            println(e.message)
+            e.printStackTrace()
+            throw e
+        }
+    }
+
+
 
     fun startRecordAudio() {
         try {
@@ -332,28 +455,25 @@ class FlutterScreenRecordingPlugin(
                     .setBufferSizeInBytes(minBufferSize)
                     .build()
             var audioData = ByteArray(minBufferSize)
-            audioPath = mFileName?.replace(".mp4", ".mp3")
+            audioPath = mFileName?.replace(".mp4", ".pcm")
             var file = File(audioPath!!)
             if (file.exists()) {
                 file.delete()
             }
             file.createNewFile()
-            var lame = SimpleLame.init(sampleRate, 1, sampleRate, 32)
             var fileOutputStream = FileOutputStream(file)
             isRecordingAudio = true
             audioRecord!!.startRecording()
             Thread {
                 while (isRecordingAudio) {
                     var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
-                    var encodedData = SimpleLame.encode(audioData, audioData, numberOfReadBytes)
-                    if (encodedData > 0) {
-                        fileOutputStream.write(audioData, 0, encodedData)
+                    if (numberOfReadBytes > 0) {
+                        fileOutputStream.write(audioData, 0, numberOfReadBytes)
                     }
                 }
                 fileOutputStream.close()
                 audioRecord?.stop()
                 audioRecord?.release()
-                SimpleLame.close(lame)
             }.start()
         } catch (e: Exception) {
             println("Error startRecordAudio")
