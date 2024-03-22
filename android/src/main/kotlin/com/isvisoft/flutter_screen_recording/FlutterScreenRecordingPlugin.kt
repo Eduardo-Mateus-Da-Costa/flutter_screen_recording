@@ -344,6 +344,7 @@ class FlutterScreenRecordingPlugin(
                     var numberOfReadBytes = audioRecord!!.read(audioData, 0, minBufferSize)
                     fileOutputStream.write(audioData, 0, numberOfReadBytes)
                 }
+                fileOutputStream.close()
             }.start()
         } catch (e: Exception) {
             println("Error startRecordAudio")
