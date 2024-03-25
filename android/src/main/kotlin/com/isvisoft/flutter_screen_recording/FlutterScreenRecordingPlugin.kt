@@ -208,8 +208,7 @@ class FlutterScreenRecordingPlugin(
                 mMediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mMediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            }
-            if (!recordAudio!! && !recordInternalAudio!!) {
+            } else {
                 mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             }
             mMediaRecorder?.setOutputFile(mFileName)
