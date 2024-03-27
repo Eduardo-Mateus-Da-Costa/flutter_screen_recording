@@ -17,7 +17,7 @@ dependencies:
 
   flutter_web_plugins:
     sdk: flutter
-  js: ^0.6.3
+  js: ^0.7.1
   platform_detect: ^2.0.0
 
 dev_dependencies:
