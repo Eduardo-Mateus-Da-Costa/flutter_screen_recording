@@ -35,10 +35,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         try AVAudioSession.sharedInstance().setCategory(
           .playAndRecord, mode: .videoRecording, options: [.defaultToSpeaker])
         try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
-      } catch {
-        #if DEBUG
+      } catch let error {
+          print(error.localizedDescription)
           print("Setting category to AVAudioSessionCategoryPlayback failed.")
-        #endif
       }
 
       self.recordAudio = (args?["audio"] as? Bool)!
@@ -47,6 +46,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
       startRecording()
 
     } else if call.method == "stopRecordScreen" {
+        print("Stop recording")
       if videoWriter != nil {
         stopRecording()
         let documentsPath =
@@ -54,6 +54,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
           as NSString
         result(String(documentsPath.appendingPathComponent(nameVideo)))
       }
+      print("recordStop error")
       result("")
     }
   }
@@ -62,14 +63,16 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
     //Use ReplayKit to record the screen
     //Create the file path to write to
-    let documentsPath =
-      NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
+    let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
     self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
-
+    print("videoOutputURL: \(videoOutputURL)")
     //Check the file does not already exist by deleting it if it does
     do {
       try FileManager.default.removeItem(at: videoOutputURL!)
-    } catch {}
+    } catch let error {
+        print("Error deleting existing file")
+        print(error.localizedDescription)
+    }
 
     do {
       try videoWriter = AVAssetWriter(outputURL: videoOutputURL!, fileType: AVFileType.mp4)
@@ -127,6 +130,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
       } else {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
       }
+
+      print("Starting recording screen...")
 
       RPScreenRecorder.shared().startCapture(
         handler: { (cmSampleBuffer, rpSampleType, error) in
@@ -200,8 +205,12 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             return
           }
         }
+
+        print("Screen recording started")
+
+        self.myResult!(true)
     } else {
-      //Fallback on earlier versions
+      print("Screen recording not available for this version of iOS")
     }
   }
 
@@ -212,8 +221,11 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         print("stopping recording")
       })
     } else {
-      //  Fallback on earlier versions
+        print("Screen recording not available for this version of iOS")
     }
+
+    //Finish writing the video
+    print("Finishing writing video")
 
     self.videoWriterInput?.markAsFinished()
     self.audioInput?.markAsFinished()
@@ -238,7 +250,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         }
       }
     }
-
+    print("Video saved")
   }
 
 }
