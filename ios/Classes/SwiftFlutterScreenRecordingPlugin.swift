@@ -28,6 +28,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
     if call.method == "startRecordScreen" {
+      NSLog("SwiftLog startRecordScreen")
       myResult = result
       let args = call.arguments as? [String: Any]
 
@@ -36,17 +37,20 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
           .playAndRecord, mode: .videoRecording, options: [.defaultToSpeaker])
         try AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
       } catch let error {
-          print(error.localizedDescription)
-          print("Setting category to AVAudioSessionCategoryPlayback failed.")
+          NSLog(error.localizedDescription)
+          NSLog("Setting category to AVAudioSessionCategoryPlayback failed.")
       }
 
       self.recordAudio = (args?["audio"] as? Bool)!
       self.recordInternalAudio = (args?["internalaudio"] as? Bool)!
       self.nameVideo = (args?["name"] as? String)! + ".mp4"
+      NSLog("swift recordAudio: \(recordAudio)")
+      NSLog("swift recordInternalAudio: \(recordInternalAudio)")
+      NSLog("swift nameVideo: \(nameVideo)")
       startRecording()
 
     } else if call.method == "stopRecordScreen" {
-        print("Stop recording")
+        NSLog("Stop recording")
       if videoWriter != nil {
         stopRecording()
         let documentsPath =
@@ -54,7 +58,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
           as NSString
         result(String(documentsPath.appendingPathComponent(nameVideo)))
       }
-      print("recordStop error")
+      NSLog("recordStop error")
       result("")
     }
   }
@@ -65,19 +69,19 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     //Create the file path to write to
     let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
     self.videoOutputURL = URL(fileURLWithPath: documentsPath.appendingPathComponent(nameVideo))
-    print("videoOutputURL: \(videoOutputURL)")
+    NSLog("videoOutputURL: \(videoOutputURL)")
     //Check the file does not already exist by deleting it if it does
     do {
       try FileManager.default.removeItem(at: videoOutputURL!)
     } catch let error {
-        print("Error deleting existing file")
-        print(error.localizedDescription)
+        NSLog("Error deleting existing file")
+        NSLog(error.localizedDescription)
     }
 
     do {
       try videoWriter = AVAssetWriter(outputURL: videoOutputURL!, fileType: AVFileType.mp4)
     } catch let writerError as NSError {
-      print("Error opening video file", writerError)
+      NSLog("Error opening video file", writerError)
       videoWriter = nil
       return
     }
@@ -131,13 +135,13 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         RPScreenRecorder.shared().isMicrophoneEnabled = false
       }
 
-      print("Starting recording screen...")
+      NSLog("Starting recording screen...")
 
       RPScreenRecorder.shared().startCapture(
         handler: { (cmSampleBuffer, rpSampleType, error) in
           guard error == nil else {
             //Handle error
-            print("Error starting capture")
+            NSLog("Error starting capture")
             self.myResult!(false)
             return
           }
@@ -147,11 +151,11 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             DispatchQueue.main.async {
               switch rpSampleType {
               case RPSampleBufferType.video:
-                print("writing sample....")
+                NSLog("writing sample....")
                 if self.videoWriter?.status == AVAssetWriter.Status.unknown {
 
                   if (self.videoWriter?.startWriting) != nil {
-                    print("Starting writing")
+                    NSLog("Starting writing")
                     self.myResult!(true)
                     self.videoWriter?.startWriting()
                     self.videoWriter?.startSession(
@@ -161,9 +165,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
                 if self.videoWriter?.status == AVAssetWriter.Status.writing {
                   if self.videoWriterInput?.isReadyForMoreMediaData == true {
-                    print("Writing a sample")
+                    NSLog("Writing a sample")
                     if self.videoWriterInput?.append(cmSampleBuffer) == false {
-                      print(" we have a problem writing video")
+                      NSLog(" we have a problem writing video")
                       self.myResult!(false)
                     }
                   }
@@ -172,9 +176,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
               case RPSampleBufferType.audioMic:
                 if self.recordAudio {
                   if self.audioInput.isReadyForMoreMediaData {
-                    // print("audioMic data added")
+                    // NSLog("audioMic data added")
                     if self.audioInput.append(cmSampleBuffer) == false {
-                      print(" we have a problem writing audio")
+                      NSLog(" we have a problem writing audio")
                       self.myResult!(false)
                     }
                   }
@@ -183,9 +187,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                case RPSampleBufferType.audioApp:
                 if self.recordInternalAudio {
                   if self.audioInput.isReadyForMoreMediaData {
-                    // print("audioApp data added")
+                    // NSLog("audioApp data added")
                     if self.audioInput.append(cmSampleBuffer) == false {
-                      print(" we have a problem writing audio")
+                      NSLog(" we have a problem writing audio")
                       self.myResult!(false)
                     }
                   }
@@ -193,51 +197,51 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
               default:
               ();
-              // print("not a video sample, so ignore")
+              // NSLog("not a video sample, so ignore")
               }
             }
           }
         }) { (error) in
           guard error == nil else {
             //Handle error
-            print("Screen record not allowed")
+            NSLog("Screen record not allowed")
             self.myResult!(false)
             return
           }
         }
 
-        print("Screen recording started")
+        NSLog("Screen recording started")
 
         self.myResult!(true)
     } else {
-      print("Screen recording not available for this version of iOS")
+      NSLog("Screen recording not available for this version of iOS")
     }
   }
 
   @objc func stopRecording() {
     //Stop Recording the screen
     if #available(iOS 11.0, *) {
-        print("Stopping recording")
+        NSLog("Stopping recording")
         do{
           try RPScreenRecorder.shared().stopCapture(handler: { (error) in
-            print("stopping recording")
+            NSLog("stopping recording")
           })
         } catch let error {
-            print("Error stopping recording")
-            print(error.localizedDescription)
+            NSLog("Error stopping recording")
+            NSLog(error.localizedDescription)
         }
     } else {
-        print("Screen recording not available for this version of iOS")
+        NSLog("Screen recording not available for this version of iOS")
     }
 
     //Finish writing the video
-    print("Finishing writing video")
+    NSLog("Finishing writing video")
 
     self.videoWriterInput?.markAsFinished()
     self.audioInput?.markAsFinished()
 
     self.videoWriter?.finishWriting {
-      print("finished writing video")
+      NSLog("finished writing video")
 
       //Now save the video
       PHPhotoLibrary.shared().performChanges({
@@ -251,12 +255,12 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
           //self.present(alertController, animated: true, completion: nil)
         }
         if error != nil {
-          print("Video did not save for some reason", error.debugDescription)
-          debugPrint(error?.localizedDescription ?? "error is nil")
+          NSLog("Video did not save for some reason", error.debugDescription)
+          debugNSLog(error?.localizedDescription ?? "error is nil")
         }
       }
     }
-    print("Video saved")
+    NSLog("Video saved")
   }
 
 }
