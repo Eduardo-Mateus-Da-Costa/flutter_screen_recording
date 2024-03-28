@@ -256,7 +256,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         }
         if error != nil {
           NSLog("Video did not save for some reason", error.debugDescription)
-          debugNSLog(error?.localizedDescription ?? "error is nil")
+          NSLog(error?.localizedDescription ?? "error is nil")
         }
       }
     }
