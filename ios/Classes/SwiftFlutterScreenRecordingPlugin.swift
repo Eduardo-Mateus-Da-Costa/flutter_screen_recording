@@ -217,9 +217,15 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
   @objc func stopRecording() {
     //Stop Recording the screen
     if #available(iOS 11.0, *) {
-      RPScreenRecorder.shared().stopCapture(handler: { (error) in
-        print("stopping recording")
-      })
+        print("Stopping recording")
+        do{
+          try RPScreenRecorder.shared().stopCapture(handler: { (error) in
+            print("stopping recording")
+          })
+        } catch let error {
+            print("Error stopping recording")
+            print(error.localizedDescription)
+        }
     } else {
         print("Screen recording not available for this version of iOS")
     }
