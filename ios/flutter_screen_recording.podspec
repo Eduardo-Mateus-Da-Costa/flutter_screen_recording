@@ -15,7 +15,10 @@ A new Flutter plugin for record the screen.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
+  s.platform = :ios, '10.0'
 
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.ios.deployment_target = '10.0'
+  s.swift_version = '5.0'
 end
 
