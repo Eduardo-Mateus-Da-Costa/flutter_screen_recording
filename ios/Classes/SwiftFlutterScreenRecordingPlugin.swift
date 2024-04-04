@@ -49,16 +49,16 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
         if(call.method == "startRecordScreen"){
             do {
+                result(self.success)
                 DispatchQueue.main.async { [self] in
                     let pickerView = RPSystemBroadcastPickerView(
                     frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                    //var tap = pickerView.subviews.first as! UIButton
+                    var tap = pickerView.subviews.first as! UIButton
                     pickerView.translatesAutoresizingMaskIntoConstraints = false
                     let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
                     pickerView.preferredExtension = extensionId
-                    //tap.sendActions(for: .touchUpInside)
+                    tap.sendActions(for: .touchUpInside)
                 }
-                result(self.success)
                 return
             }catch let error as NSError {
                 NSLog("Error starting capture")
@@ -68,16 +68,16 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
            }
         }else if(call.method == "stopRecordScreen"){
             do {
+                    result("")
                     DispatchQueue.main.async { [self] in
                     let pickerView = RPSystemBroadcastPickerView(
                     frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                    //var tap = pickerView.subviews.first as! UIButton
+                    var tap = pickerView.subviews.first as! UIButton
                     pickerView.translatesAutoresizingMaskIntoConstraints = false
                     let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
                     pickerView.preferredExtension = extensionId
-                    //tap.sendActions(for: .touchUpInside)
+                    tap.sendActions(for: .touchUpInside)
                 }
-                result("")
                 return
             }catch let error as NSError {
                 NSLog("Error starting capture")
