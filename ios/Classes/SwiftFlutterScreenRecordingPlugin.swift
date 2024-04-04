@@ -51,7 +51,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             recorderConfig = RecorderConfig()
             let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
             recorderConfig.isAudioEnabled=((args?["audio"] as? Bool?)! ?? (args?["internalaudio"] as? Bool?)! ?? false)!
-            recorderConfig.fileName=(args?["name"] as? String)!+".mp4"
+            recorderConfig.fileName=(args?["name"] as? String)!
             recorderConfig.dirPathToSave = documentsPath
             recorderConfig.addTimeCode=true
             recorderConfig.videoFrame=30
