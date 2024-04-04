@@ -56,7 +56,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
                 pickerView.preferredExtension = extensionId
                 tap.sendActions(for: .touchUpInside)
-                result(self.success)
+                result(true)
                 return
             }catch let error as NSError {
                 NSLog("Error starting capture")
