@@ -71,7 +71,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                     recorderConfig.height = Int(UIScreen.main.nativeBounds.height)
                 }
             }
-            self.success=Bool(startRecording(width: Int32(recorderConfig.width!) ,height: Int32(recorderConfig.height!)));
+            self.success=Bool(startRecording(width: Int32(recorderConfig.width!) ,height: Int32(recorderConfig.height!)))
 
             myResult = result
             result(self.success)
@@ -83,6 +83,10 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             }
             myResult = result
             if (self.success){
+                print("Success")
+                print(recorderConfig.filePath)
+                print(recorderConfig.fileName)
+                result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
                 let fileName = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
                 result(fileName)
             }
@@ -124,8 +128,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 self.message=String("Started Video")
             } catch let writerError as NSError {
                 self.message=String(writerError as! Substring) as String
-                videoWriter = nil;
-                res = Bool(false);
+                videoWriter = nil
+                res = Bool(false)
             }
             if #available(iOS 11.0, *) {
                 recorder.isMicrophoneEnabled = recorderConfig.isAudioEnabled
@@ -138,8 +142,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                         AVVideoAverageBitRateKey: recorderConfig.videoBitrate!
                     ] as [String : Any],
                 ]
-                self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings);
-                self.videoWriterInput?.expectsMediaDataInRealTime = true;
+                self.videoWriterInput = AVAssetWriterInput(mediaType: AVMediaType.video, outputSettings: videoSettings)
+                self.videoWriterInput?.expectsMediaDataInRealTime = true
                 self.videoWriter?.add(videoWriterInput!);
                 if(recorderConfig.isAudioEnabled) {
                     let audioOutputSettings: [String : Any] = [
@@ -149,8 +153,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                         AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
                     ]
                     self.audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
-                    self.audioInput?.expectsMediaDataInRealTime = true;
-                    self.videoWriter?.add(audioInput!);
+                    self.audioInput?.expectsMediaDataInRealTime = true
+                    self.videoWriter?.add(audioInput!)
                 }
 
                 recorder.startCapture(handler: { (cmSampleBuffer, rpSampleType, error) in guard error == nil else { return }
@@ -163,7 +167,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                             if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
                                 if  self.videoWriterInput?.append(cmSampleBuffer) == false {
                                     res = Bool(false)
-                                    self.message="Error starting capture";
+                                    self.message="Error starting capture"
                                 }
                             }
                         }
