@@ -83,7 +83,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             }
             myResult = result
             if (self.success){
-                NSLog("Success")
+                NSLog("Success" as String)
                 NSLog(recorderConfig.filePath)
                 NSLog(recorderConfig.fileName)
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
@@ -177,9 +177,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                 if (self.recorderConfig.isAudioEnabled){
                                     if self.audioInput?.isReadyForMoreMediaData == true {
                                         if self.audioInput?.append(cmSampleBuffer) == false {
-                                            NSLog("Audio mic writing error")
-                                            NSLog(self.videoWriter?.status ?? "")
-                                            NSLog(self.videoWriter?.error ?? "")
+                                            NSLog("Audio mic writing error" as String)
+                                            NSLog(self.videoWriter?.status as String? ?? "" as String)
+                                            NSLog(self.videoWriter?.error as String? ?? "" as String)
                                         }
                                     }
                                 }
