@@ -80,6 +80,6 @@ class FlutterScreenRecording {
   }
 
   static void globalForegroundService() {
-    print("current datetime is ${DateTime.now()}");
+    NSLog("current datetime is ${DateTime.now()}");
   }
 }

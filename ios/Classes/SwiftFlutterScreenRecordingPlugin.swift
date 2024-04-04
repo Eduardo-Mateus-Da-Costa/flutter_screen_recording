@@ -83,9 +83,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             }
             myResult = result
             if (self.success){
-                print("Success")
-                print(recorderConfig.filePath)
-                print(recorderConfig.fileName)
+                NSLog("Success")
+                NSLog(recorderConfig.filePath)
+                NSLog(recorderConfig.fileName)
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
                 // var fileName: String = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
@@ -177,9 +177,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                 if (self.recorderConfig.isAudioEnabled){
                                     if self.audioInput?.isReadyForMoreMediaData == true {
                                         if self.audioInput?.append(cmSampleBuffer) == false {
-                                            print("Audio mic writing error")
-                                            print(self.videoWriter?.status ?? "")
-                                            print(self.videoWriter?.error ?? "")
+                                            NSLog("Audio mic writing error")
+                                            NSLog(self.videoWriter?.status ?? "")
+                                            NSLog(self.videoWriter?.error ?? "")
                                         }
                                     }
                                 }
@@ -187,9 +187,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                if (self.recorderConfig.isAudioEnabled){
                                     if self.audioInput?.isReadyForMoreMediaData == true {
                                         if self.audioInput?.append(cmSampleBuffer) == false {
-                                            print("Audio app writing error")
-                                            print(self.videoWriter?.status ?? "")
-                                            print(self.videoWriter?.error ?? "")
+                                            NSLog("Audio app writing error")
+                                            NSLog(self.videoWriter?.status ?? "")
+                                            NSLog(self.videoWriter?.error ?? "")
                                         }
                                     }
                                 }
