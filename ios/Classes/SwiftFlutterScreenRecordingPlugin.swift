@@ -187,7 +187,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                if (self.recorderConfig.isAudioEnabled){
                                     if self.audioInput?.isReadyForMoreMediaData == true {
                                         if self.audioInput?.append(cmSampleBuffer) == false {
-                                            NSLog("Audio app writing error")
+                                            NSLog("Audio app writing error" as String)
                                             NSLog(self.videoWriter?.status as String ?? "")
                                             NSLog(self.videoWriter?.error ?? "")
                                         }
