@@ -49,15 +49,13 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
         if(call.method == "startRecordScreen"){
             do {
-                DispatchQueue.main.sync { [self] in
-                    let pickerView = RPSystemBroadcastPickerView(
-                    frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                    var tap = pickerView.subviews.first as! UIButton
-                    pickerView.translatesAutoresizingMaskIntoConstraints = false
-                    let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
-                    pickerView.preferredExtension = extensionId
-                    tap.sendActions(for: .touchUpInside)
-                }
+                let pickerView = RPSystemBroadcastPickerView(
+                frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                var tap = pickerView.subviews.first as! UIButton
+                pickerView.translatesAutoresizingMaskIntoConstraints = false
+                let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
+                pickerView.preferredExtension = extensionId
+                tap.sendActions(for: .touchUpInside)
                 result(self.success)
                 return
             }catch let error as NSError {
@@ -68,15 +66,13 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
            }
         }else if(call.method == "stopRecordScreen"){
             do {
-                    DispatchQueue.main.sync{ [self] in
-                    let pickerView = RPSystemBroadcastPickerView(
-                    frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                    var tap = pickerView.subviews.first as! UIButton
-                    pickerView.translatesAutoresizingMaskIntoConstraints = false
-                    let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
-                    pickerView.preferredExtension = extensionId
-                    tap.sendActions(for: .touchUpInside)
-                }
+                let pickerView = RPSystemBroadcastPickerView(
+                frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                var tap = pickerView.subviews.first as! UIButton
+                pickerView.translatesAutoresizingMaskIntoConstraints = false
+                let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
+                pickerView.preferredExtension = extensionId
+                tap.sendActions(for: .touchUpInside)
                 result("lalala")
                 return
             }catch let error as NSError {
