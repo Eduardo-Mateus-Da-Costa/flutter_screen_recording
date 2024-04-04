@@ -40,7 +40,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "flutter_screen_recording", binaryMessenger: registrar.messenger())
-        let instance = SwiftEdScreenRecorderPlugin()
+        let instance = SwiftFlutterScreenRecordingPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
