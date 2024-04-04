@@ -87,7 +87,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 print(recorderConfig.filePath)
                 print(recorderConfig.fileName)
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
-                let fileName = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
+                let fileName: String = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
                 result(fileName)
             }
             else {
@@ -157,44 +157,37 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                     self.videoWriter?.add(audioInput!)
                 }
 
-                recorder.startCapture(handler: { (cmSampleBuffer, rpSampleType, error) in guard error == nil else { return }
-                    switch rpSampleType {
-                    case RPSampleBufferType.video:
-                        if self.videoWriter?.status == AVAssetWriter.Status.unknown {
-                            self.videoWriter?.startWriting()
-                            self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer));
-                        }else if self.videoWriter?.status == AVAssetWriter.Status.writing {
-                            if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
-                                if  self.videoWriterInput?.append(cmSampleBuffer) == false {
-                                    res = Bool(false)
-                                    self.message="Error starting capture"
+                recorder.startCapture(
+                    handler: {
+                    (cmSampleBuffer, rpSampleType, error) in guard error == nil else { return }
+                        switch rpSampleType {
+                            case RPSampleBufferType.video:
+                                if self.videoWriter?.status == AVAssetWriter.Status.unknown {
+                                    self.videoWriter?.startWriting()
+                                    self.videoWriter?.startSession(atSourceTime:  CMSampleBufferGetPresentationTimeStamp(cmSampleBuffer));
+                                }else if self.videoWriter?.status == AVAssetWriter.Status.writing {
+                                    if (self.videoWriterInput?.isReadyForMoreMediaData == true) {
+                                        if  self.videoWriterInput?.append(cmSampleBuffer) == false {
+                                            res = Bool(false)
+                                            self.message="Error starting capture"
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                    //case RPSampleBufferType.audioMic:
-                     //   if(self.recorderConfig.isAudioEnabled){
-                      //      if self.audioInput?.isReadyForMoreMediaData == true {
-                       //         if self.audioInput?.append(cmSampleBuffer) == false {
-                        //            print(self.videoWriter?.status ?? "")
-                        //            print(self.videoWriter?.error ?? "")
-                        //        }
-                        //    }
-                       // }
-                    case RPSampleBufferType.audioApp:
-                        if (self.recorderConfig.isAudioEnabled){
-                            if self.audioInput?.isReadyForMoreMediaData == true {
-                                if self.audioInput?.append(cmSampleBuffer) == false {
-                                    print(self.videoWriter?.status ?? "")
-                                    print(self.videoWriter?.error ?? "")
+                            case RPSampleBufferType.audioApp:
+                                if (self.recorderConfig.isAudioEnabled){
+                                    if self.audioInput?.isReadyForMoreMediaData == true {
+                                        if self.audioInput?.append(cmSampleBuffer) == false {
+                                            print(self.videoWriter?.status ?? "")
+                                            print(self.videoWriter?.error ?? "")
+                                        }
+                                    }
                                 }
-                            }
+                        default:
+                            break;
                         }
-                    default:
-                        break;
+                    }){(error) in guard error == nil else {
+                        return
                     }
-                }){(error) in guard error == nil else {
-                    return
-                }
                 }
             }
         }
