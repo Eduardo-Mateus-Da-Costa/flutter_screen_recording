@@ -48,43 +48,43 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
         if(call.method == "startRecordScreen"){
-        do {
-            DispatchQueue.main.async { [self] in
-                        let pickerView = RPSystemBroadcastPickerView(
-                            frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-                        var tap = pickerView.subviews.first as! UIButton
-                        pickerView.translatesAutoresizingMaskIntoConstraints = false
-                        let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
-                        pickerView.preferredExtension = extensionId
-                        tap.sendActions(for: .touchUpInside)
-
-                        }
-            }
-                catch let error as NSError {
-                        NSLog("Error starting capture")
-                        NSLog("\(error)")
-                        result(false)
-                        return
-                   }
-            result(self.success)
+            do {
+                DispatchQueue.main.async { [self] in
+                    let pickerView = RPSystemBroadcastPickerView(
+                    frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                    var tap = pickerView.subviews.first as! UIButton
+                    pickerView.translatesAutoresizingMaskIntoConstraints = false
+                    let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
+                    pickerView.preferredExtension = extensionId
+                    tap.sendActions(for: .touchUpInside)
+                }
+                result(self.success)
+                return
+            }catch let error as NSError {
+                NSLog("Error starting capture")
+                NSLog("\(error)")
+                result(false)
+                return
+           }
         }else if(call.method == "stopRecordScreen"){
-            if(videoWriter != nil){
-                self.success=Bool(stopRecording())
-            }else{
-                self.success=Bool(false)
-            }
-            myResult = result
-            if (self.success){
-                NSLog("Success")
-                NSLog(recorderConfig.filePath as String)
-                NSLog(recorderConfig.fileName as String)
-                result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName) as String)
-                // var fileName: String = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
-                result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
-            }
-            else {
+            do {
+                    DispatchQueue.main.async { [self] in
+                    let pickerView = RPSystemBroadcastPickerView(
+                    frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                    var tap = pickerView.subviews.first as! UIButton
+                    pickerView.translatesAutoresizingMaskIntoConstraints = false
+                    let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
+                    pickerView.preferredExtension = extensionId
+                    tap.sendActions(for: .touchUpInside)
+                }
                 result("")
-            }
+                return
+            }catch let error as NSError {
+                NSLog("Error starting capture")
+                NSLog("\(error)")
+                result("")
+                return
+           }
         }
         else {
             result("")
