@@ -48,33 +48,24 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
 
         if(call.method == "startRecordScreen"){
-            let args = call.arguments as? Dictionary<String, Any>
-            recorderConfig = RecorderConfig()
-            let documentsPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as NSString
-            recorderConfig.isAudioEnabled=((args?["audio"] as? Bool?)! ?? (args?["internalaudio"] as? Bool?)! ?? false)!
-            recorderConfig.fileName=(args?["name"] as? String)!
-            recorderConfig.dirPathToSave = documentsPath
-            recorderConfig.addTimeCode=true
-            recorderConfig.videoFrame=30
+        do {
+            DispatchQueue.main.async { [self] in
+                        let pickerView = RPSystemBroadcastPickerView(
+                            frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+                        var tap = pickerView.subviews.first as! UIButton
+                        pickerView.translatesAutoresizingMaskIntoConstraints = false
+                        let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
+                        pickerView.preferredExtension = extensionId
+                        tap.sendActions(for: .touchUpInside)
 
-            if UIDevice.current.orientation.isLandscape {
-                if(recorderConfig.width == nil) {
-                    recorderConfig.width = Int(UIScreen.main.nativeBounds.height)
-                }
-                if(recorderConfig.height == nil) {
-                    recorderConfig.height = Int(UIScreen.main.nativeBounds.width)
-                }
-            }else{
-                if(recorderConfig.width == nil) {
-                    recorderConfig.width = Int(UIScreen.main.nativeBounds.width)
-                }
-                if(recorderConfig.height == nil) {
-                    recorderConfig.height = Int(UIScreen.main.nativeBounds.height)
-                }
+                        }
             }
-            self.success=Bool(startRecording(width: Int32(recorderConfig.width!) ,height: Int32(recorderConfig.height!)))
-
-            myResult = result
+                catch let error as NSError {
+                        NSLog("Error starting capture")
+                        NSLog("\(error)")
+                        result(false)
+                        return
+                   }
             result(self.success)
         }else if(call.method == "stopRecordScreen"){
             if(videoWriter != nil){
