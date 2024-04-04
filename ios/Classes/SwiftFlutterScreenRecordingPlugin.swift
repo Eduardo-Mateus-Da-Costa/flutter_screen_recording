@@ -173,7 +173,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                         }
                                     }
                                 }
-                            case RPSampleBufferType.audioApp:
+                            case RPSampleBufferType.microphoneAudio:
                                 if (self.recorderConfig.isAudioEnabled){
                                     if self.audioInput?.isReadyForMoreMediaData == true {
                                         if self.audioInput?.append(cmSampleBuffer) == false {
