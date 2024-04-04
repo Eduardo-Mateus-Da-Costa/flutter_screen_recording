@@ -10,7 +10,7 @@ struct RecorderConfig {
     var addTimeCode: Bool! = false
     var filePath: NSString = ""
     var videoFrame: Int?
-    var videoBitrate: Int?
+    var videoBitrate: Int? = 5000
     var fileOutputFormat: String = ""
     var fileExtension: String = ""
     var videoHash: String = ""
