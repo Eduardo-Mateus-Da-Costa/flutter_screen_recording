@@ -24,6 +24,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
     var videoOutputURL : URL?
     var videoWriter : AVAssetWriter?
     var audioInput:AVAssetWriterInput!
+    var internalAudioInput:AVAssetWriterInput!
     var videoWriterInput : AVAssetWriterInput?
 
     var success: Bool = false
@@ -155,6 +156,10 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                     self.audioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
                     self.audioInput?.expectsMediaDataInRealTime = true
                     self.videoWriter?.add(audioInput!)
+
+                    self.internalAudioInput = AVAssetWriterInput(mediaType: AVMediaType.audio, outputSettings: audioOutputSettings)
+                    self.internalAudioInput?.expectsMediaDataInRealTime = true
+                    self.videoWriter?.add(internalAudioInput!)
                 }
 
                 recorder.startCapture(
@@ -185,8 +190,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                 }
                             case RPSampleBufferType.audioApp:
                                if (self.recorderConfig.isAudioEnabled){
-                                    if self.audioInput?.isReadyForMoreMediaData == true {
-                                        if self.audioInput?.append(cmSampleBuffer) == false {
+                                    if self.internalAudioInput?.isReadyForMoreMediaData == true {
+                                        if self.internalAudioInput?.append(cmSampleBuffer) == false {
                                             NSLog("Audio app writing error")
                                             NSLog("\(self.videoWriter?.status)")
                                             NSLog("\(self.videoWriter?.error)")
@@ -224,6 +229,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             self.videoWriterInput?.markAsFinished();
             if(recorderConfig.isAudioEnabled) {
                 self.audioInput?.markAsFinished();
+                self.internalAudioInput?.markAsFinished();
             }
 
             self.videoWriter?.finishWriting {
