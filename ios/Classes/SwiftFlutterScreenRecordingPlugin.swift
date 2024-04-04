@@ -87,7 +87,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 print(recorderConfig.filePath)
                 print(recorderConfig.fileName)
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName))
-                let fileName: String = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
+                var fileName: String = String("\(recorderConfig.filePath)/\(recorderConfig.fileName)"),
                 result(fileName)
             }
             else {
