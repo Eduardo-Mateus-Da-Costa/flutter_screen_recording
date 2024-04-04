@@ -167,15 +167,15 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                                 }
                             }
                         }
-                    case RPSampleBufferType.audioMic:
-                        if(self.recorderConfig.isAudioEnabled){
-                            if self.audioInput?.isReadyForMoreMediaData == true {
-                                if self.audioInput?.append(cmSampleBuffer) == false {
-                                    print(self.videoWriter?.status ?? "")
-                                    print(self.videoWriter?.error ?? "")
-                                }
-                            }
-                        }
+                    //case RPSampleBufferType.audioMic:
+                     //   if(self.recorderConfig.isAudioEnabled){
+                      //      if self.audioInput?.isReadyForMoreMediaData == true {
+                       //         if self.audioInput?.append(cmSampleBuffer) == false {
+                        //            print(self.videoWriter?.status ?? "")
+                        //            print(self.videoWriter?.error ?? "")
+                        //        }
+                        //    }
+                       // }
                     case RPSampleBufferType.audioApp:
                         if (self.recorderConfig.isAudioEnabled){
                             if self.audioInput?.isReadyForMoreMediaData == true {
