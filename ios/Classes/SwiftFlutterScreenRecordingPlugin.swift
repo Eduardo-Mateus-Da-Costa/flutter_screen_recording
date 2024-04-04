@@ -83,7 +83,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             }
             myResult = result
             if (self.success){
-                NSLog("Success" as String)
+                NSLog("Success")
                 NSLog(recorderConfig.filePath as String)
                 NSLog(recorderConfig.fileName as String)
                 result(recorderConfig.filePath.appendingPathComponent(recorderConfig.fileName) as String)

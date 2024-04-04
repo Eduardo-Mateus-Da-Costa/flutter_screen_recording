@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     sub.onDone(() {
-      NSLog("Done");
+      print("Done");
       sub.cancel();
     });
   }
@@ -113,8 +113,8 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       recording = !recording;
     });
-    NSLog("Opening video");
-    NSLog(path);
+    print("Opening video");
+    print(path);
     OpenFile.open(path);
   }
 }
