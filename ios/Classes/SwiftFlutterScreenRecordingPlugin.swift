@@ -53,8 +53,20 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             var appGroupIdentifier = args["appGroupIdentifier"] as! String
             var pathDirectory = args["pathDirectory"] as! String
             var jsonFileName = args["jsonFileName"] as! String
-            var sharedContainer: URL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) as URL!
-            var directory: URL = sharedContainer!.appendingPathComponent(pathDirectory) as URL!
+            var sharedContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
+            
+            if (sharedContainer == nil){
+                result("")
+                return
+            }
+            
+            var directory = sharedContainer?.appendingPathComponent(pathDirectory)
+            
+            if (directory == nil){
+                result("")
+                return
+            }
+            
             var error: NSError?
             if !FileManager.default.fileExists(atPath: directory!.path) {
                 do {
@@ -67,9 +79,14 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 }
             }
 
-            var jsonPath: URL = directory!.appendingPathComponent(jsonFileName) as URL!
-
-            var filePath: String = directory!.appendingPathComponent(fileName).path as String
+            var jsonPath = directory?.appendingPathComponent(jsonFileName)
+            
+            if (jsonPath == nil){
+                result("")
+                return
+            }
+            
+            var filePath = directory?.appendingPathComponent(fileName).path
 
             let jsonDictionary: [String: Any] = [
                     "filePath": filePath,
@@ -79,8 +96,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 ]
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
-                try jsonData.write(to: jsonPath)
-                result(jsonPath.path)
+                try jsonData.write(to: jsonPath!)
+                result(jsonPath!.path)
             } catch let err as NSError{
                 NSLog("Error writing JSON data: \(err)")
                 result("")
