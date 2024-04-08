@@ -1,4 +1,5 @@
 import Flutter
+import ReplayKit
 
 public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
@@ -58,9 +59,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             if !FileManager.default.fileExists(atPath: directory!.path) {
                 do {
                     try FileManager.default.createDirectory(atPath: directory!.path, withIntermediateDirectories: true, attributes: nil)
-                } catch let error as NSError{
-                    NSLog("Error creating directory: \(error)")
-                    error = error
+                } catch let err as NSError{
+                    NSLog("Error creating directory: \(err)")
+                    error = err
                     result("")
                     return
                 }
@@ -74,9 +75,9 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 do {
                     let path = directory?.appendingPathComponent(fileName)
                     return path!.path
-                } catch let error as NSError {
-                    NSLog("Error creating file path: \(error)")
-                    error = error
+                } catch let err as NSError {
+                    NSLog("Error creating file path: \(err)")
+                    error = err
                     result("")
                     return ""
                 }
@@ -84,16 +85,16 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
 
             let jsonDictionary: [String: Any] = [
                     "filePath": filePath,
-                    "error": error?.localizedDescription ?? nil,
-                    "startedDatetime": nil,
-                    "finishedDatetime": nil,
+                    "error": error?.localizedDescription,
+                    "startedDatetime": NSNull(),
+                    "finishedDatetime": NSNull()
                 ]
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
                 try jsonData.write(to: jsonPath)
                 result(jsonPath.path)
-            } catch {
-                NSLog("Error writing JSON data: \(error)")
+            } catch let err as NSError{
+                NSLog("Error writing JSON data: \(err)")
                 result("")
                 return
             }
