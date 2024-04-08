@@ -53,8 +53,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             var appGroupIdentifier = args["appGroupIdentifier"] as! String
             var pathDirectory = args["pathDirectory"] as! String
             var jsonFileName = args["jsonFileName"] as! String
-            var sharedContainer: URL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
-            var directory: URL = sharedContainer!.appendingPathComponent(pathDirectory)
+            var sharedContainer: URL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) as URL!
+            var directory: URL = sharedContainer!.appendingPathComponent(pathDirectory) as URL!
             var error: NSError?
             if !FileManager.default.fileExists(atPath: directory!.path) {
                 do {
