@@ -45,7 +45,7 @@ abstract class FlutterScreenRecordingPlatform extends PlatformInterface {
 
   Future<String>createJsonFile(
   {
-    required String filePath,
+    required String fileName,
     required String appGroupIdentifier,
     required String pathDirectory,
     required String jsonFileName

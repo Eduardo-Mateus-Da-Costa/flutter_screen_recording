@@ -34,7 +34,7 @@ class MethodChannelFlutterScreenRecording
   }
 
   Future<String> createJsonFile(
-      {required String filePath,
+      {required String fileName,
       required String appGroupIdentifier,
       required String pathDirectory,
       required String jsonFileName}
@@ -43,7 +43,7 @@ class MethodChannelFlutterScreenRecording
       throw Exception("This method is only available on iOS");
     }
     final String path = await _channel.invokeMethod('createJsonFile', {
-      "filePath": filePath,
+      "fileName": fileName,
       "appGroupIdentifier": appGroupIdentifier,
       "pathDirectory": pathDirectory,
       "jsonFileName": jsonFileName,
