@@ -42,7 +42,7 @@ class MethodChannelFlutterScreenRecording
     if (!Platform.isIOS){
       throw Exception("This method is only available on iOS");
     }
-    final String path = await _channel.invokeMethod('createJsonFile', {
+    final String path = await _channel.invokeMethod('makeJson', {
       "fileName": fileName,
       "appGroupIdentifier": appGroupIdentifier,
       "pathDirectory": pathDirectory,
