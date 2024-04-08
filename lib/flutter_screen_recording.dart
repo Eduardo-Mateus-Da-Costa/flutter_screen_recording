@@ -44,6 +44,22 @@ class FlutterScreenRecording {
     return path;
   }
 
+
+  static Future<String> createJson({
+    required String filePath,
+    required String appGroupIdentifier,
+    required String pathDirectory,
+    required String jsonFileName,
+  }) async {
+    final String path = await FlutterScreenRecordingPlatform.instance.createJsonFile(filePath: filePath, appGroupIdentifier: appGroupIdentifier, pathDirectory: pathDirectory, jsonFileName: jsonFileName);
+    if (path == "") {
+      throw Exception("Error: Create json file failed.");
+    }
+    return path;
+  }
+
+
+
   static _maybeStartFGS(
       String titleNotification, String messageNotification) async {
     if (!kIsWeb && Platform.isAndroid) {
