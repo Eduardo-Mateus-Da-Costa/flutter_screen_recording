@@ -48,17 +48,19 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
         } else if (call.method == "makeJson"){
             var args = call.arguments as! [String: Any]
 
-            var filePath = args["filePath"] as! String
+            var fileName = args["fileName"] as! String
             var appGroupIdentifier = args["appGroupIdentifier"] as! String
             var pathDirectory = args["pathDirectory"] as! String
             var jsonFileName = args["jsonFileName"] as! String
             var sharedContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
             var directory = sharedContainer?.appendingPathComponent(pathDirectory)
+            var error: NSError?
             if !FileManager.default.fileExists(atPath: directory!.path) {
                 do {
                     try FileManager.default.createDirectory(atPath: directory!.path, withIntermediateDirectories: true, attributes: nil)
-                } catch {
+                } catch let error as NSError{
                     NSLog("Error creating directory: \(error)")
+                    error = error
                     result("")
                     return
                 }
@@ -67,9 +69,22 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                     let sharedContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
                     return sharedContainer?.appendingPathComponent(pathDirectory).appendingPathComponent(jsonFileName)
                 }
+
+            var filePath: String {
+                do {
+                    let path = directory?.appendingPathComponent(fileName)
+                    return path!.path
+                } catch let error as NSError {
+                    NSLog("Error creating file path: \(error)")
+                    error = error
+                    result("")
+                    return ""
+                }
+            }
+
             let jsonDictionary: [String: Any] = [
                     "filePath": filePath,
-                    "error": nil,
+                    "error": error?.localizedDescription ?? nil,
                     "startedDatetime": nil,
                     "finishedDatetime": nil,
                 ]
