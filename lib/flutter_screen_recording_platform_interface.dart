@@ -42,4 +42,14 @@ abstract class FlutterScreenRecordingPlatform extends PlatformInterface {
   Future<String> get stopRecordScreen {
     throw UnimplementedError();
   }
+
+  Future<String>createJsonFile(
+  {
+    required String filePath,
+    required String appGroupIdentifier,
+    required String pathDirectory,
+    required String jsonFileName
+  }) {
+    throw UnimplementedError();
+  }
 }
