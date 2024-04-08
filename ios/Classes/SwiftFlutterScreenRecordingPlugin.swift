@@ -67,19 +67,12 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 }
             }
             var jsonPath: URL {
-                    return sharedContainer!.appendingPathComponent(pathDirectory).appendingPathComponent(jsonFileName)
+                    return directory!.appendingPathComponent(jsonFileName)
                 }
 
             var filePath: String {
-                do {
-                    let path = directory?.appendingPathComponent(fileName)
-                    return path!.path
-                } catch let err as NSError {
-                    NSLog("Error creating file path: \(err)")
-                    error = err
-                    result("")
-                    return ""
-                }
+                 let pathUrl = directory!.appendingPathComponent(fileName)
+                 return pathUrl!.path
             }
 
             let jsonDictionary: [String: Any] = [
