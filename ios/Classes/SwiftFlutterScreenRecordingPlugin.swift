@@ -54,7 +54,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
             var pathDirectory = args["pathDirectory"] as! String
             var jsonFileName = args["jsonFileName"] as! String
             var sharedContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
-            var directory = sharedContainer?.appendingPathComponent(pathDirectory)
+            var directory = sharedContainer!.appendingPathComponent(pathDirectory)
             var error: NSError?
             if !FileManager.default.fileExists(atPath: directory!.path) {
                 do {
@@ -67,8 +67,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 }
             }
             var jsonPath: URL {
-                    let sharedContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)
-                    return sharedContainer?.appendingPathComponent(pathDirectory).appendingPathComponent(jsonFileName)
+                    return sharedContainer!.appendingPathComponent(pathDirectory).appendingPathComponent(jsonFileName)
                 }
 
             var filePath: String {
