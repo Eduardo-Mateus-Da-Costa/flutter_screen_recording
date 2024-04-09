@@ -83,7 +83,7 @@ packages:
     description:
       path: "."
       ref: solo_interface
-      resolved-ref: "0437bdaf75dffea28eb36c7e5394ad18eaac75dc"
+      resolved-ref: "897cfc655fc35b84d0d5243ba81102f8a2d3abc6"
       url: "https://github.com/Eduardo-Mateus-Da-Costa/flutter_screen_recording.git"
     source: git
     version: "1.0.2"

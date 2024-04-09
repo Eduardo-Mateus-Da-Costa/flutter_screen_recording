@@ -20,6 +20,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 pickerView.translatesAutoresizingMaskIntoConstraints = false
                 let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
                 pickerView.preferredExtension = extensionId
+                pickerView.showsMicrophoneButton = false
                 tap.sendActions(for: .touchUpInside)
                 result(true)
                 return
@@ -37,6 +38,7 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                 pickerView.translatesAutoresizingMaskIntoConstraints = false
                 let extensionId = Bundle.main.object(forInfoDictionaryKey: "RTCScreenSharingExtension") as? String
                 pickerView.preferredExtension = extensionId
+                pickerView.showsMicrophoneButton = false
                 tap.sendActions(for: .touchUpInside)
                 result("NoEmpty")
                 return
