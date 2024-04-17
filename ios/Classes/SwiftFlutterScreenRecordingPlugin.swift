@@ -95,7 +95,8 @@ public class SwiftFlutterScreenRecordingPlugin: NSObject, FlutterPlugin {
                     "error": error?.localizedDescription,
                     "startedDatetime": NSNull(),
                     "finishedDatetime": NSNull(),
-                    "logging": NSNull()
+                    "logging": NSNull(),
+                    "lastTime": NSNull()
                 ]
             do {
                 let jsonData = try JSONSerialization.data(withJSONObject: jsonDictionary, options: .prettyPrinted)
