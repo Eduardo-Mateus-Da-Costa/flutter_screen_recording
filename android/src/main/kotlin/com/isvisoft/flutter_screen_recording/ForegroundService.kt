@@ -1,4 +1,4 @@
-package com.foregroundservice
+package com.isvisoft.flutter_screen_recording
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
