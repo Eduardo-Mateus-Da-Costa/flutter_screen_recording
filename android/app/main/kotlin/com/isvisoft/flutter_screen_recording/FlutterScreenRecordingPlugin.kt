@@ -1,4 +1,4 @@
-package com.isvisoft.flutter_screen_recording
+package android.app.main.kotlin.com.isvisoft.flutter_screen_recording
 
 import android.app.Activity
 import android.content.Context
@@ -26,6 +26,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.File
 import java.io.IOException
 import android.media.MediaRecorder.AudioSource
+import com.foregroundservice.ForegroundService
 
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -42,8 +43,6 @@ import java.io.DataOutputStream
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
-import com.isvisoft.flutter_screen_recording.ForegroundService
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
