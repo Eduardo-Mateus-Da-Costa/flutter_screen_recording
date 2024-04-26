@@ -1,4 +1,4 @@
-package com.isvisoft.flutter_screen_recording
+package android.app.main.kotlin.com.isvisoft.flutter_screen_recording
 
 import android.app.Activity
 import android.content.Context
@@ -26,6 +26,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.File
 import java.io.IOException
 import android.media.MediaRecorder.AudioSource
+import com.foregroundservice.ForegroundService
 
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -42,8 +43,6 @@ import java.io.DataOutputStream
 import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-
-import com.isvisoft.flutter_screen_recording.ForegroundService
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -321,86 +320,13 @@ class FlutterScreenRecordingPlugin(
                     throw e
                 }
             }
-//            USAGE_ALARM
-//            Usage value to use when the usage is an alarm (e.g. wake-up alarm).
-//
-//            int	USAGE_ASSISTANCE_ACCESSIBILITY
-//                    Usage value to use when the usage is for accessibility, such as with a screen reader.
-//
-//            int	USAGE_ASSISTANCE_NAVIGATION_GUIDANCE
-//                    Usage value to use when the usage is driving or navigation directions.
-//
-//            int	USAGE_ASSISTANCE_SONIFICATION
-//                    Usage value to use when the usage is sonification, such as with user interface sounds.
-//
-//            int	USAGE_ASSISTANT
-//                    Usage value to use for audio responses to user queries, audio instructions or help utterances.
-//
-//            int	USAGE_GAME
-//                    Usage value to use when the usage is for game audio.
-//
-//            int	USAGE_MEDIA
-//                    Usage value to use when the usage is media, such as music, or movie soundtracks.
-//
-//            int	USAGE_NOTIFICATION
-//                    Usage value to use when the usage is notification.
-//
-//            int	USAGE_NOTIFICATION_COMMUNICATION_DELAYED
-//            This constant was deprecated in API level 33. Use USAGE_NOTIFICATION which is handled the same way as this usage by the audio framework
-//
-//            int	USAGE_NOTIFICATION_COMMUNICATION_INSTANT
-//                    This constant was deprecated in API level 33. Use USAGE_NOTIFICATION which is handled the same way as this usage by the audio framework
-//
-//            int	USAGE_NOTIFICATION_COMMUNICATION_REQUEST
-//                    This constant was deprecated in API level 33. Use USAGE_NOTIFICATION which is handled the same way as this usage by the audio framework
-//
-//            int	USAGE_NOTIFICATION_EVENT
-//                    Usage value to use when the usage is to attract the user's attention, such as a reminder or low battery warning.
-//
-//            int	USAGE_NOTIFICATION_RINGTONE
-//                    Usage value to use when the usage is telephony ringtone.
-//
-//            int	USAGE_UNKNOWN
-//                    Usage value to use when the usage is unknown.
-//
-//            int	USAGE_VOICE_COMMUNICATION
-//            Usage value to use when the usage is voice communications, such as telephony or VoIP.
-//
-//            int	USAGE_VOICE_COMMUNICATION_SIGNALLING
-//                    Usage value to use when the usage is in-call signalling, such as with a "busy" beep, or DTMF tones.
-            var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!)
-                .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
-                .addMatchingUsage(AudioAttributes.USAGE_GAME)
-                .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
-                .addMatchingUsage(AudioAttributes.USAGE_ALARM)
-                .addMatchingUsage(AudioAttributes.USAGE_ASSISTANCE_ACCESSIBILITY)
-                .addMatchingUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
-                .addMatchingUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
-                .addMatchingUsage(AudioAttributes.USAGE_ASSISTANT)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_DELAYED)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_INSTANT)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION_COMMUNICATION_REQUEST)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION_EVENT)
-                .addMatchingUsage(AudioAttributes.USAGE_NOTIFICATION_RINGTONE)
-                .addMatchingUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
-                .addMatchingUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION_SIGNALLING)
-                .build()
+            var audioConfig = AudioPlaybackCaptureConfiguration.Builder(mMediaProjection!!).addMatchingUsage(AudioAttributes.USAGE_MEDIA).build();
             var sampleRate = 44100
             var channelConfig = AudioFormat.CHANNEL_IN_MONO
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
             var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-//            audioRecord = AudioRecord.Builder()
-//                    .setAudioPlaybackCaptureConfig(audioConfig)
-//                    .setAudioFormat(AudioFormat.Builder()
-//                            .setEncoding(audioFormat)
-//                            .setSampleRate(sampleRate)
-//                            .setChannelMask(channelConfig)
-//                            .build())
-//                    .setBufferSizeInBytes(minBufferSize)
-//                    .build()
             audioRecord = AudioRecord.Builder()
-                    .setAudioSource(AudioSource.REMOTE_SUBMIX)
+                    .setAudioPlaybackCaptureConfig(audioConfig)
                     .setAudioFormat(AudioFormat.Builder()
                             .setEncoding(audioFormat)
                             .setSampleRate(sampleRate)
