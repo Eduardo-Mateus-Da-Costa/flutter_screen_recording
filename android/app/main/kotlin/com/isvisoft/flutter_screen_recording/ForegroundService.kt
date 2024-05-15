@@ -14,9 +14,9 @@ import com.isvisoft.flutter_screen_recording.R
 import android.R.drawable
 import android.content.pm.ServiceInfo
 import androidx.core.app.ServiceCompat
+android.app.Notification
 
 import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
-import sun.jvm.hotspot.debugger.win32.coff.DebugVC50X86RegisterEnums.TAG
 
 
 
@@ -25,7 +25,29 @@ class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
     companion object {
         fun startService(context: Context, title: String, content: String) {
-            createNotificationChannel()
+            val builder: Notification.Builder = Builder(context)
+            val nfIntent: Intent = Intent(context, FlutterScreenRecordingPlugin::class.java)
+
+            builder.setContentIntent(PendingIntent.getActivity(context, 0, nfIntent, 0))
+                .setLargeIcon(R.drawable.icon)
+                .setSmallIcon(R.drawable.icon)
+                .setContentText("is running......")
+                .setWhen(java.lang.System.currentTimeMillis())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setChannelId("notification_id")
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationManager: NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                val channel: NotificationChannel =
+                    NotificationChannel("notification_id", "notification_name", NotificationManager.IMPORTANCE_LOW)
+                notificationManager.createNotificationChannel(channel)
+            }
+
+            val notification: Notification = builder.build()
+            notification.defaults = Notification.DEFAULT_SOUND
+            startForeground(110, notification)
         }
 
 
@@ -36,7 +58,6 @@ class ForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        LogUtil.d(DebugVC50X86RegisterEnums.TAG, " onStartCommand intent = $intent")
         createNotificationChannel()
 
         return START_NOT_STICKY
@@ -49,11 +70,11 @@ class ForegroundService : Service() {
 
     private fun createNotificationChannel() {
         val builder: Notification.Builder = Builder(this.getApplicationContext())
-        val nfIntent: Intent = Intent(this, MainActivity::class.java)
+        val nfIntent: Intent = Intent(this, FlutterScreenRecordingPlugin::class.java)
 
         builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0))
-            .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setLargeIcon(R.drawable.icon)
+            .setSmallIcon(R.drawable.icon)
             .setContentText("is running......")
             .setWhen(java.lang.System.currentTimeMillis())
 
