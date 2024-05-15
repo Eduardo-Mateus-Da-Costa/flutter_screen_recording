@@ -14,7 +14,7 @@ import com.isvisoft.flutter_screen_recording.R
 import android.R.drawable
 import android.content.pm.ServiceInfo
 import androidx.core.app.ServiceCompat
-android.app.Notification
+import android.app.Notification
 
 import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
 
