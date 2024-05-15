@@ -67,14 +67,14 @@ class ForegroundService : Service() {
                 this,
                 0, notificationIntent, PendingIntent.FLAG_MUTABLE
             )
-            var notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            var notification = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.icon)
                 .setContentIntent(pendingIntent).build()
 
             ServiceCompat.startForeground(
-                context,
+                this,
                 1,
                 notification,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
