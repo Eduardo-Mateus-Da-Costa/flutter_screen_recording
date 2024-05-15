@@ -20,28 +20,16 @@ import androidx.core.app.ServiceCompat
 class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
         companion object {
-                fun startService(context: Context, title: String, content: String) {
-                    var notification = NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setContentTitle(title)
-                        .setContentText(content)
-                        .setSmallIcon(R.drawable.icon).build()
-                    ServiceCompat.startForeground(
-                        this,
-                        1,
-                        notification,
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-                        } else {
-                            0
-                        }
-                    )
-                }
+            fun startService(context: Context, title: String, content: String) {
+                ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
+            }
 
 
-                fun stopService(context: Context) {
-                    val stopIntent = Intent(context, ForegroundService::class.java)
-                    context.stopService(stopIntent)
-                }
+            fun stopService(context: Context) {
+                val intent = Intent(context, ForegroundService::class.java)
+                intent.action = STOP_ACTION
+                ContextCompat.startForegroundService(context, intent)
+            }
         }
 
         override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
