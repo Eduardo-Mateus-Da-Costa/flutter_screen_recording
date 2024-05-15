@@ -21,6 +21,12 @@ class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
     companion object {
         fun startService(context: Context, title: String, content: String) {
+            val notificationIntent = Intent(context, FlutterScreenRecordingPlugin::class.java)
+
+            val pendingIntent = PendingIntent.getActivity(
+                context,
+                0, notificationIntent, PendingIntent.FLAG_MUTABLE
+            )
             var notification = NotificationCompat.Builder(context, CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(content)
@@ -29,13 +35,17 @@ class ForegroundService : Service() {
                 context,
                 1,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                } else {
+                    0
+                }
             )
         }
 
 
         fun stopService(context: Context) {
-            ServiceCompat.stopForeground(context, ServiceInfo.MEDIA_PROJECTION_SERVICE)
+            stopSelf()
         }
 
         override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -66,10 +76,14 @@ class ForegroundService : Service() {
                 context,
                 1,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                } else {
+                    0
+                }
             )
 
-            return START_NOT_STICKY
+            return super.onStartCommand(intent, flags, startId)
         }
 
         override fun onBind(intent: Intent): IBinder? {
