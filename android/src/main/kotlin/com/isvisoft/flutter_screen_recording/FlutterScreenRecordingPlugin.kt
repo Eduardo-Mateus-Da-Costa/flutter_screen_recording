@@ -48,12 +48,12 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
-import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import android.R.drawable
+import android.telephony.mbms.ServiceInfo
+import androidx.core.app.ServiceCompat
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -174,13 +174,13 @@ class FlutterScreenRecordingPlugin(
     }
 
     private fun startService(context: Context, title: String, content: String) {
-        val notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, "General", NotificationManager.IMPORTANCE_DEFAULT)
+        var notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
+        var channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, "General", NotificationManager.IMPORTANCE_DEFAULT)
         notificationManager.createNotificationChannel(channel)
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        var notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(content)
-                .setSmallIcon(R.drawable.ic_notifcation_icon)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setForegroundServiceBehavior(ServiceInfo.FOREGROUND_SERVICE_IMMEDIATE).build()
         ServiceCompat.startForegroundService(
             context,
