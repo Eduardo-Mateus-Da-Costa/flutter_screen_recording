@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:quiver/async.dart';
 
@@ -115,6 +114,5 @@ class _MyAppState extends State<MyApp> {
     });
     print("Opening video");
     print(path);
-    OpenFile.open(path);
   }
 }
