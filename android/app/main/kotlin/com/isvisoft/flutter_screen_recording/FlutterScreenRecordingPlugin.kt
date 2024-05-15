@@ -1,4 +1,4 @@
-package android.app.main.kotlin.com.isvisoft.flutter_screen_recording
+package com.isvisoft.flutter_screen_recording
 
 import android.app.Activity
 import android.content.Context
@@ -26,7 +26,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.File
 import java.io.IOException
 import android.media.MediaRecorder.AudioSource
-import com.foregroundservice.ForegroundService
 
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -44,8 +43,10 @@ import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
+import com.isvisoft.flutter_screen_recording.ForegroundService
+
 class FlutterScreenRecordingPlugin(
-        private val registrar: Registrar
+    private val registrar: Registrar
 ) : MethodCallHandler, PluginRegistry.ActivityResultListener{
 
     var mScreenDensity: Int = 0
@@ -84,11 +85,13 @@ class FlutterScreenRecordingPlugin(
         if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
-                mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
-                mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
-                mVirtualDisplay = createVirtualDisplay()
-                _result.success(true)
-                return true
+                Handler().postDelayed({
+                    mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
+                    mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
+                    mVirtualDisplay = createVirtualDisplay()
+                    _result.success(true)
+                    return true
+                }, 1000)
             } else {
                 _result.success(false)
             }
@@ -326,14 +329,14 @@ class FlutterScreenRecordingPlugin(
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
             var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
             audioRecord = AudioRecord.Builder()
-                    .setAudioPlaybackCaptureConfig(audioConfig)
-                    .setAudioFormat(AudioFormat.Builder()
-                            .setEncoding(audioFormat)
-                            .setSampleRate(sampleRate)
-                            .setChannelMask(channelConfig)
-                            .build())
-                    .setBufferSizeInBytes(minBufferSize)
-                    .build()
+                .setAudioPlaybackCaptureConfig(audioConfig)
+                .setAudioFormat(AudioFormat.Builder()
+                    .setEncoding(audioFormat)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(channelConfig)
+                    .build())
+                .setBufferSizeInBytes(minBufferSize)
+                .build()
             var audioData = ByteArray(minBufferSize)
             audioPath = mFileName?.replace(".mp4", ".pcm")
             var file = File(audioPath!!)
@@ -375,8 +378,8 @@ class FlutterScreenRecordingPlugin(
         try {
             startRecord()
             return mMediaProjection?.createVirtualDisplay(
-                    "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
+                "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
             )
         } catch (e: Exception) {
             Log.d("Error createVirtualDisplay", e.message+"")
