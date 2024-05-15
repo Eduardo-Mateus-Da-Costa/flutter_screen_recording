@@ -19,35 +19,30 @@ import androidx.core.app.ServiceCompat
 
 class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
-    companion object {
-        fun startService(context: Context, title: String, content: String) {
-            val notificationIntent = Intent(context, FlutterScreenRecordingPlugin::class.java)
-
-            val pendingIntent = PendingIntent.getActivity(
-                context,
-                0, notificationIntent, PendingIntent.FLAG_MUTABLE
-            )
-            var notification = NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setSmallIcon(R.drawable.icon).build()
-            ServiceCompat.startForeground(
-                context,
-                1,
-                notification,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-                } else {
-                    0
+        companion object {
+                fun startService(context: Context, title: String, content: String) {
+                    var notification = NotificationCompat.Builder(context, CHANNEL_ID)
+                        .setContentTitle(title)
+                        .setContentText(content)
+                        .setSmallIcon(R.drawable.icon).build()
+                    ServiceCompat.startForeground(
+                        context,
+                        1,
+                        notification,
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                        } else {
+                            0
+                        }
+                    )
                 }
-            )
-        }
 
 
-        fun stopService(context: Context) {
-            stopSelf()
+                fun stopService(context: Context) {
+                    val stopIntent = Intent(context, ForegroundService::class.java)
+                    context.stopService(stopIntent)
+                }
         }
-    }
 
         override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
@@ -91,10 +86,13 @@ class ForegroundService : Service() {
             return null
         }
 
-        private fun createNotificationChannel() {
-            var notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-            var channel = NotificationChannel(CHANNEL_ID, "General", NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
+        private fun createNotificationChannel(context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val serviceChannel = NotificationChannel(CHANNEL_ID, "Foreground Service Channel",
+                    NotificationManager.IMPORTANCE_DEFAULT)
+                val manager = getSystemService(NotificationManager::class.java)
+                manager!!.createNotificationChannel(serviceChannel)
+            }
         }
     }
 }
