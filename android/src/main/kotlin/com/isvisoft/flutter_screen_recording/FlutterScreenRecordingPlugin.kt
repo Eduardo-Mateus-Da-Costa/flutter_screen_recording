@@ -44,16 +44,7 @@ import java.io.FileInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
-import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import android.R.drawable
-import android.telephony.mbms.ServiceInfo
-import androidx.core.app.ServiceCompat
+import com.isvisoft.flutter_screen_recording.ForegroundService
 
 class FlutterScreenRecordingPlugin(
         private val registrar: Registrar
@@ -78,7 +69,6 @@ class FlutterScreenRecordingPlugin(
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
-    private const val NOTIFICATION_CHANNEL_ID = "general_notification_channel"
 
 
     companion object {
@@ -124,7 +114,7 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
-                startService(registrar.context(), title, message)
+                ForegroundService.startService(registrar.context(), title, message)
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
@@ -156,7 +146,7 @@ class FlutterScreenRecordingPlugin(
             }
         } else if (call.method == "stopRecordScreen") {
             try {
-                stopService(registrar.context())
+                ForegroundService.stopService(registrar.context())
                 if (mMediaRecorder != null) {
                     stopRecord()
                     result.success(mFileName)
@@ -171,28 +161,6 @@ class FlutterScreenRecordingPlugin(
         } else {
             result.notImplemented()
         }
-    }
-
-    private fun startService(context: Context, title: String, content: String) {
-        var notificationManager = context.getSystemService(Service.NOTIFICATION_SERVICE) as NotificationManager
-        var channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, "General", NotificationManager.IMPORTANCE_DEFAULT)
-        notificationManager.createNotificationChannel(channel)
-        var notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(title)
-                .setContentText(content)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setForegroundServiceBehavior(ServiceInfo.FOREGROUND_SERVICE_IMMEDIATE).build()
-        ServiceCompat.startForegroundService(
-            context,
-            1,
-            notification,
-            ServiceInfo.MEDIA_PROJECTION_SERVICE
-        )
-    }
-
-
-    private fun stopService(context: Context) {
-        ServiceCompat.stopForeground(this, ServiceInfo.MEDIA_PROJECTION_SERVICE)
     }
 
     private fun calculeResolution(metrics: DisplayMetrics) {
