@@ -31,7 +31,7 @@ class ForegroundService : Service() {
                 .setContentTitle(title)
                 .setContentText(content)
                 .setSmallIcon(R.drawable.icon).build()
-            ServiceCompat.startForegroundService(
+            ServiceCompat.startForeground(
                 context,
                 1,
                 notification,
@@ -73,7 +73,7 @@ class ForegroundService : Service() {
                 .setSmallIcon(R.drawable.icon)
                 .setContentIntent(pendingIntent).build()
 
-            ServiceCompat.startForegroundService(
+            ServiceCompat.startForeground(
                 context,
                 1,
                 notification,
