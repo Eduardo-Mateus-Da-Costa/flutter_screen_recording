@@ -47,6 +47,7 @@ class ForegroundService : Service() {
         fun stopService(context: Context) {
             stopSelf()
         }
+    }
 
         override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
