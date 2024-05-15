@@ -16,6 +16,9 @@ import android.content.pm.ServiceInfo
 import androidx.core.app.ServiceCompat
 
 import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
+import sun.jvm.hotspot.debugger.win32.coff.DebugVC50X86RegisterEnums.TAG
+
+
 
 
 class ForegroundService : Service() {
@@ -32,54 +35,37 @@ class ForegroundService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-        var title = intent?.getStringExtra("titleExtra")
-        if (title == null) {
-            title = "Flutter Screen Recording";
-        }
-        var message = intent?.getStringExtra("messageExtra")
-        if (message == null) {
-            message = ""
-        }
-
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        LogUtil.d(DebugVC50X86RegisterEnums.TAG, " onStartCommand intent = $intent")
         createNotificationChannel()
-        val notificationIntent = Intent(this, FlutterScreenRecordingPlugin::class.java)
 
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            0, notificationIntent, PendingIntent.FLAG_MUTABLE
-        )
-        var notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setSmallIcon(R.drawable.icon)
-            .setContentIntent(pendingIntent).build()
-
-        ServiceCompat.startForeground(
-            this,
-            1,
-            notification,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-            } else {
-                0
-            }
-        )
-
-        return super.onStartCommand(intent, flags, startId)
+        return START_NOT_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
-    }
 
     private fun createNotificationChannel() {
+        val builder: Notification.Builder = Builder(this.getApplicationContext())
+        val nfIntent: Intent = Intent(this, MainActivity::class.java)
+
+        builder.setContentIntent(PendingIntent.getActivity(this, 0, nfIntent, 0))
+            .setLargeIcon(BitmapFactory.decodeResource(this.getResources(), R.mipmap.ic_launcher))
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentText("is running......")
+            .setWhen(java.lang.System.currentTimeMillis())
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(CHANNEL_ID, "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_DEFAULT)
-            val manager = getSystemService(NotificationManager::class.java)
-            manager!!.createNotificationChannel(serviceChannel)
+            builder.setChannelId("notification_id")
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager: NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            val channel: NotificationChannel =
+                NotificationChannel("notification_id", "notification_name", NotificationManager.IMPORTANCE_LOW)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification: Notification = builder.build()
+        notification.defaults = Notification.DEFAULT_SOUND
+        startForeground(110, notification)
     }
 }
