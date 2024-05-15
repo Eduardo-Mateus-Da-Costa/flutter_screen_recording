@@ -32,6 +32,7 @@ import android.media.AudioRecord
 import java.io.FileOutputStream
 import android.media.AudioPlaybackCaptureConfiguration
 import android.media.AudioAttributes
+import android.os.Handler
 
 import com.arthenica.mobileffmpeg.ExecuteCallback;
 import com.arthenica.mobileffmpeg.FFmpeg;
@@ -82,6 +83,7 @@ class FlutterScreenRecordingPlugin(
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         intentData = data
+        val success = true
         if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
@@ -89,9 +91,10 @@ class FlutterScreenRecordingPlugin(
                     mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
                     mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
                     mVirtualDisplay = createVirtualDisplay()
-                    _result.success(true)
-                    return true
+                    success = true
                 }, 1000)
+                _result.success(success)
+                return success
             } else {
                 _result.success(false)
             }
