@@ -94,5 +94,4 @@ class ForegroundService : Service() {
                 manager!!.createNotificationChannel(serviceChannel)
             }
         }
-    }
 }
