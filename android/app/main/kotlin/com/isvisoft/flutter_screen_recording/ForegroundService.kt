@@ -25,7 +25,7 @@ class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
     companion object {
         fun startService(context: Context, title: String, content: String) {
-            ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
+            createNotificationChannel()
         }
 
 
@@ -40,6 +40,10 @@ class ForegroundService : Service() {
         createNotificationChannel()
 
         return START_NOT_STICKY
+    }
+
+    override fun onBind(intent: Intent): IBinder? {
+        return null
     }
 
 

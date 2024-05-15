@@ -23,23 +23,27 @@ import sun.jvm.hotspot.debugger.win32.coff.DebugVC50X86RegisterEnums.TAG
 
 class ForegroundService : Service() {
     private val CHANNEL_ID = "general_notification_channel"
-        companion object {
-            fun startService(context: Context, title: String, content: String) {
-                ContextCompat.startForegroundService(context, Intent(context, ForegroundService::class.java))
-            }
-
-
-            fun stopService(context: Context) {
-                val stopIntent = Intent(context, ForegroundService::class.java)
-                context.stopService(stopIntent)
-            }
+    companion object {
+        fun startService(context: Context, title: String, content: String) {
+            createNotificationChannel()
         }
+
+
+        fun stopService(context: Context) {
+            val stopIntent = Intent(context, ForegroundService::class.java)
+            context.stopService(stopIntent)
+        }
+    }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         LogUtil.d(DebugVC50X86RegisterEnums.TAG, " onStartCommand intent = $intent")
         createNotificationChannel()
 
         return START_NOT_STICKY
+    }
+
+    override fun onBind(intent: Intent): IBinder? {
+        return null
     }
 
 
