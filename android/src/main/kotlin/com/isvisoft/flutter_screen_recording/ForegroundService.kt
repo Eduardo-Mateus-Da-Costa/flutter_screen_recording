@@ -26,9 +26,8 @@ class ForegroundService : Service() {
 
 
             fun stopService(context: Context) {
-                val intent = Intent(context, ForegroundService::class.java)
-                intent.action = STOP_ACTION
-                ContextCompat.startForegroundService(context, intent)
+                val stopIntent = Intent(context, ForegroundService::class.java)
+                context.stopService(stopIntent)
             }
         }
 
