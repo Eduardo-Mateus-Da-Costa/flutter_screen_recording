@@ -45,7 +45,7 @@ class ForegroundService : Service() {
         } else if (intent?.action == ACTION_START) {
             print("startService")
             Log.d("StartForeground", "L startService")
-            startFService()
+            startFService(null)
         }
         print("START_STICKY")
         Log.d("StartForeground", "L START_STICKY")
