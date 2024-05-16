@@ -52,7 +52,7 @@ class ForegroundService : Service() {
             .setSmallIcon(R.drawable.icon)
             .setContentIntent(pendingIntent)
             .build()
-        startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE TYPE_MEDIA_PROJECTION)
+        startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
         Log.d("ForegroundService", "Service started")
         return START_NOT_STICKY
     }
