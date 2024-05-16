@@ -66,6 +66,7 @@ class FlutterScreenRecordingPlugin(
     var audioPath: String? = ""
     var audioRecord: AudioRecord? = null
     var intentData: Intent? = null
+    var context: Context? = null
     private val SCREEN_RECORD_REQUEST_CODE = 333
 
     private lateinit var _result: MethodChannel.Result
@@ -78,6 +79,7 @@ class FlutterScreenRecordingPlugin(
             val plugin = FlutterScreenRecordingPlugin(registrar)
             channel.setMethodCallHandler(plugin)
             registrar.addActivityResultListener(plugin)
+            context = registrar.context()
         }
     }
 
@@ -116,7 +118,7 @@ class FlutterScreenRecordingPlugin(
                 }
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
-                startForegroundService(registrar.context().applicationContext, title, message)
+                startForegroundService(context, title, message)
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
 //                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
