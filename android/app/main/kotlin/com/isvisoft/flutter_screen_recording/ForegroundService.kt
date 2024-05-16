@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import android.content.pm.ServiceInfo
 import android.util.Log
 
+import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
 
 
 class ForegroundService : Service() {
@@ -60,6 +61,7 @@ class ForegroundService : Service() {
 
     fun startFService(context: Context?) {
         var context = context ?: this
+        print("Context: $context")
         val nfIntent: Intent = Intent(context, FlutterScreenRecordingPlugin::class.java)
         var flags = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT > 23) flags = flags or PendingIntent.FLAG_IMMUTABLE
