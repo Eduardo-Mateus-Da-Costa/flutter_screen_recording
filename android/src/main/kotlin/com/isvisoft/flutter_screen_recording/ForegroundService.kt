@@ -13,6 +13,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import android.content.pm.ServiceInfo
+import android.util.Log
 
 class ForegroundService : Service() {
     companion object {
