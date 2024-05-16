@@ -79,7 +79,6 @@ class FlutterScreenRecordingPlugin(
             val plugin = FlutterScreenRecordingPlugin(registrar)
             channel.setMethodCallHandler(plugin)
             registrar.addActivityResultListener(plugin)
-            context = registrar.context()
         }
     }
 
@@ -105,6 +104,9 @@ class FlutterScreenRecordingPlugin(
     }
 
     override fun  onMethodCall(call: MethodCall, result: Result) {
+        if (context == null) {
+            context = registrar.context()
+        }
         if (call.method == "startRecordScreen") {
             try {
                 _result = result
@@ -118,7 +120,7 @@ class FlutterScreenRecordingPlugin(
                 }
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
-                startForegroundService(context, title, message)
+                startForegroundService(context!!, title, message)
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
 //                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
