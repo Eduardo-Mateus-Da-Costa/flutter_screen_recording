@@ -114,7 +114,10 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
+                Log.d("StartRecordScreen", "Start Record Screen")
+                print("Start Record Screen")
                 startForegroundService(registrar.context(), title, message)
+                print("Start Record Screen")
 //                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 //
 //                val metrics = DisplayMetrics()
@@ -138,7 +141,7 @@ class FlutterScreenRecordingPlugin(
 //                recordAudio = call.argument<Boolean?>("audio")
 //                recordInternalAudio = call.argument<Boolean?>("internalaudio")
 //                prepareRecordScreen()
-//
+
             } catch (e: Exception) {
                 Log.d("Error onMethodCall startRecordScreen", e.message+"")
                 e.printStackTrace()
@@ -146,6 +149,8 @@ class FlutterScreenRecordingPlugin(
             }
         } else if (call.method == "stopRecordScreen") {
             try {
+                Log.d("StopRecordScreen", "Stop Record Screen")
+                print("Stop Record Screen")
                 stopForegroundService(registrar.context())
                 if (mMediaRecorder != null) {
                     stopRecord()
