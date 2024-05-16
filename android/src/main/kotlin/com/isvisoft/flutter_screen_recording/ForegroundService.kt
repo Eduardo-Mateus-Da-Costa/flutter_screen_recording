@@ -38,14 +38,17 @@ class ForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) : Int {
         print("onStartCommand")
+        Log.d("StartForeground", "L onStartCommand")
         if (intent?.action == ACTION_SHUTDOWN) {
             cleanupService()
             stopSelf()
         } else if (intent?.action == ACTION_START) {
             print("startService")
+            Log.d("StartForeground", "L startService")
             startService()
         }
         print("START_STICKY")
+        Log.d("StartForeground", "L START_STICKY")
         return START_STICKY
     }
 
@@ -87,9 +90,10 @@ class ForegroundService : Service() {
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
 
-        print("StartForeground 1")
+        print("P StartForeground 1")
+        Log.d("StartForeground", "L StartForeground 1")
         startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
-        print("StartForeground")
+        print("P StartForeground 2")
         Log.d("StartForeground", "Foreground service started")
     }
 

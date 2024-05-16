@@ -114,9 +114,10 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
-                Log.d("StartRecordScreen", "Start Record Screen")
+                Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
                 startForegroundService(registrar.context(), title, message)
+                Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
 //                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 //
@@ -173,14 +174,19 @@ class FlutterScreenRecordingPlugin(
         val intent = Intent(context, ForegroundService::class.java)
         intent.action = ForegroundService.ACTION_START
         print("P Start Foreground Service")
+        Log.d("StartForegroundService", "L Start Foreground Service")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             print("P Start Foreground Service")
+            Log.d("StartForegroundService", "L Start Foreground Service")
             context.startForegroundService(intent)
             print("P Start Foreground Service")
+            Log.d("StartForegroundService", "L Start Foreground Service")
         } else {
             print("P Start Foreground Service2")
+            Log.d("StartForegroundService", "L Start Foreground Service2")
             context.startService(intent)
             print("P Start Foreground Service2")
+            Log.d("StartForegroundService", "L Start Foreground Service2")
         }
     }
 
