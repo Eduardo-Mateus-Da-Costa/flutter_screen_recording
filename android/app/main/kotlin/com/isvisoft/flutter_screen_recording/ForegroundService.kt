@@ -56,15 +56,16 @@ class ForegroundService : Service() {
         stopForeground(true)
     }
 
-    private fun startService() {
+    fun startService(context: Context?) {
         val pm = applicationContext.packageManager
         val notificationIntent  = pm.getLaunchIntentForPackage(applicationContext.packageName)
 
         var flags = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT > 23) flags = flags or PendingIntent.FLAG_IMMUTABLE
 
+        var context = context ?: this
         val pendingIntent  = PendingIntent.getActivity(
-            this, 0,
+            context, 0,
             notificationIntent, flags
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -82,7 +83,7 @@ class ForegroundService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("Datacertify está gravando a tela")
             .setContentText("Datacertify está gravando a tela")
             .setSmallIcon(R.drawable.icon)
