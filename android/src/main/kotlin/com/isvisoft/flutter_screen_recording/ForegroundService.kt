@@ -11,7 +11,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
 import com.isvisoft.flutter_screen_recording.R
-
+import android.content.pm.ServiceInfo
+import android.util.Log
 
 class ForegroundService : Service() {
     private val CHANNEL_ID = "ForegroundService Kotlin"
@@ -51,8 +52,8 @@ class ForegroundService : Service() {
                 .setSmallIcon(R.drawable.icon)
                 .setContentIntent(pendingIntent)
                 .build()
-        startForeground(1, notification)
-
+        startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE TYPE_MEDIA_PROJECTION)
+        Log.d("ForegroundService", "Service started")
         return START_NOT_STICKY
     }
     override fun onBind(intent: Intent): IBinder? {
