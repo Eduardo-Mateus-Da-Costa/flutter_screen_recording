@@ -87,7 +87,7 @@ class FlutterScreenRecordingPlugin(
         if (requestCode == SCREEN_RECORD_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 mMediaProjectionCallback = MediaProjectionCallback()
-                ForegroundService.startService(registrar.context(), title, message)
+                ForegroundService.startService(registrar.context(), "Your screen is being recorded", "Your screen is being recorded")
                 Handler().postDelayed({
                     mMediaProjection = mProjectionManager?.getMediaProjection(resultCode, data!!)
                     mMediaProjection?.registerCallback(mMediaProjectionCallback, null)
