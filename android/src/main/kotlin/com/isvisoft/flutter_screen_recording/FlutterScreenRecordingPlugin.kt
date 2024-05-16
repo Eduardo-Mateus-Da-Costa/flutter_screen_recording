@@ -116,7 +116,7 @@ class FlutterScreenRecordingPlugin(
                 }
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
-                startForegroundService(registrar.context(), title, message)
+                startForegroundService(registrar.context().applicationContext, title, message)
                 Log.d("StartRecordScreen", "L Start Record Screen")
                 print("P Start Record Screen")
 //                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
