@@ -61,12 +61,11 @@ class ForegroundService : Service() {
             this, 0,
             notificationIntent, flags
         )
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Datacertify está gravando a tela",
-                NotificationManager.IMPORTANCE_MAX
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Datacertify está gravando a tela"
             }
@@ -86,6 +85,7 @@ class ForegroundService : Service() {
             .build()
 
         startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+        Log.d("StartForeground", "Foreground service started")
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
