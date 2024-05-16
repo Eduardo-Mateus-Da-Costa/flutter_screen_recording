@@ -24,7 +24,7 @@ class ForegroundService : Service() {
             startIntent.putExtra("messageExtra", message)
             startIntent.putExtra("titleExtra", title)
             Log.d("ForegroundService", "startService")
-            ContextCompat.startForegroundService(context, startIntent, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+            ContextCompat.startForegroundService(context, startIntent)
             Log.d("ForegroundService", "startService")
         }
         fun stopService(context: Context) {
