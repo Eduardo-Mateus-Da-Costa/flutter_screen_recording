@@ -76,11 +76,10 @@ class ForegroundService : Service() {
             ).apply {
                 description = "Datacertify está gravando a tela"
             }
-            channel.setShowBadge(true)
+            channel.setShowBadge(false)
             // Register the channel with the system
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+            val manager = getSystemService(NotificationManager::class.java)
+            manager!!.createNotificationChannel(serviceChannel)
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
