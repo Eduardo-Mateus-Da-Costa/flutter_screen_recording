@@ -49,7 +49,6 @@ class ForegroundService : Service() {
         stopForeground(true)
     }
 
-    @SuppressLint("WakelockTimeout")
     private fun startService() {
         val pm = applicationContext.packageManager
         val notificationIntent  = pm.getLaunchIntentForPackage(applicationContext.packageName)
