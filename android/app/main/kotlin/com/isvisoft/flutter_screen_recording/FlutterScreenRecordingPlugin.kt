@@ -114,7 +114,7 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
-                ForegroundService.startService(registrar.context(), title, message)
+                startForegroundService(registrar.context(), title, message)
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
@@ -146,7 +146,7 @@ class FlutterScreenRecordingPlugin(
             }
         } else if (call.method == "stopRecordScreen") {
             try {
-                ForegroundService.stopService(registrar.context())
+                stopForegroundService(registrar.context())
                 if (mMediaRecorder != null) {
                     stopRecord()
                     result.success(mFileName)
@@ -162,6 +162,29 @@ class FlutterScreenRecordingPlugin(
             result.notImplemented()
         }
     }
+
+
+    private fun startForegroundService(context: Context, title: String, content: String) {
+        val intent = Intent(context, ForegroundService::class.java)
+        intent.action = ForegroundService.ACTION_START
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+    private fun stopForegroundService(context: Context) {
+        val intent = Intent(context, ForegroundService::class.java)
+        intent.action = ForegroundService.ACTION_SHUTDOWN
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+
 
     private fun calculeResolution(metrics: DisplayMetrics) {
 

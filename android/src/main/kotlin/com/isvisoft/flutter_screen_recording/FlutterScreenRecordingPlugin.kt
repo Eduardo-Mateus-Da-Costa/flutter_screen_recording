@@ -47,7 +47,7 @@ import java.nio.ByteOrder
 import com.isvisoft.flutter_screen_recording.ForegroundService
 
 class FlutterScreenRecordingPlugin(
-        private val registrar: Registrar
+    private val registrar: Registrar
 ) : MethodCallHandler, PluginRegistry.ActivityResultListener{
 
     var mScreenDensity: Int = 0
@@ -114,7 +114,7 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
-                ForegroundService.startService(registrar.context(), title, message)
+                startForegroundService(registrar.context(), title, message)
                 mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
 
                 val metrics = DisplayMetrics()
@@ -146,7 +146,7 @@ class FlutterScreenRecordingPlugin(
             }
         } else if (call.method == "stopRecordScreen") {
             try {
-                ForegroundService.stopService(registrar.context())
+                stopForegroundService(registrar.context())
                 if (mMediaRecorder != null) {
                     stopRecord()
                     result.success(mFileName)
@@ -162,6 +162,29 @@ class FlutterScreenRecordingPlugin(
             result.notImplemented()
         }
     }
+
+
+    private fun startForegroundService(context: Context, title: String, content: String) {
+        val intent = Intent(context, ForegroundService::class.java)
+        intent.action = ForegroundService.ACTION_START
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+    private fun stopForegroundService(context: Context) {
+        val intent = Intent(context, ForegroundService::class.java)
+        intent.action = ForegroundService.ACTION_SHUTDOWN
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+
 
     private fun calculeResolution(metrics: DisplayMetrics) {
 
@@ -332,14 +355,14 @@ class FlutterScreenRecordingPlugin(
             var audioFormat = AudioFormat.ENCODING_PCM_16BIT
             var minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
             audioRecord = AudioRecord.Builder()
-                    .setAudioPlaybackCaptureConfig(audioConfig)
-                    .setAudioFormat(AudioFormat.Builder()
-                            .setEncoding(audioFormat)
-                            .setSampleRate(sampleRate)
-                            .setChannelMask(channelConfig)
-                            .build())
-                    .setBufferSizeInBytes(minBufferSize)
-                    .build()
+                .setAudioPlaybackCaptureConfig(audioConfig)
+                .setAudioFormat(AudioFormat.Builder()
+                    .setEncoding(audioFormat)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(channelConfig)
+                    .build())
+                .setBufferSizeInBytes(minBufferSize)
+                .build()
             var audioData = ByteArray(minBufferSize)
             audioPath = mFileName?.replace(".mp4", ".pcm")
             var file = File(audioPath!!)
@@ -381,8 +404,8 @@ class FlutterScreenRecordingPlugin(
         try {
             startRecord()
             return mMediaProjection?.createVirtualDisplay(
-                    "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
+                "MainActivity", mDisplayWidth, mDisplayHeight, mScreenDensity,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mMediaRecorder?.surface, null, null
             )
         } catch (e: Exception) {
             Log.d("Error createVirtualDisplay", e.message+"")
