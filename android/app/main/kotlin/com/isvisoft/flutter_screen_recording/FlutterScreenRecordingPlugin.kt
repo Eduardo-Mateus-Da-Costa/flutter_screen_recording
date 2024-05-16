@@ -115,29 +115,29 @@ class FlutterScreenRecordingPlugin(
                     message = "Your screen is being recorded"
                 }
                 startForegroundService(registrar.context(), title, message)
-                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
-
-                val metrics = DisplayMetrics()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
-                } else {
-                    @Suppress("DEPRECATION")
-                    mMediaRecorder = MediaRecorder()
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    val display = registrar.activity()!!.display
-                    display?.getRealMetrics(metrics)
-                } else {
-                    val defaultDisplay = registrar.context().applicationContext.getDisplay()
-                    defaultDisplay?.getMetrics(metrics)
-                }
-                mScreenDensity = metrics.densityDpi
-                calculeResolution(metrics)
-                videoName = call.argument<String?>("name")
-                recordAudio = call.argument<Boolean?>("audio")
-                recordInternalAudio = call.argument<Boolean?>("internalaudio")
-                prepareRecordScreen()
+//                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
+//
+//                val metrics = DisplayMetrics()
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                    mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
+//                } else {
+//                    @Suppress("DEPRECATION")
+//                    mMediaRecorder = MediaRecorder()
+//                }
+//
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                    val display = registrar.activity()!!.display
+//                    display?.getRealMetrics(metrics)
+//                } else {
+//                    val defaultDisplay = registrar.context().applicationContext.getDisplay()
+//                    defaultDisplay?.getMetrics(metrics)
+//                }
+//                mScreenDensity = metrics.densityDpi
+//                calculeResolution(metrics)
+//                videoName = call.argument<String?>("name")
+//                recordAudio = call.argument<Boolean?>("audio")
+//                recordInternalAudio = call.argument<Boolean?>("internalaudio")
+//                prepareRecordScreen()
 
             } catch (e: Exception) {
                 Log.d("Error onMethodCall startRecordScreen", e.message+"")
