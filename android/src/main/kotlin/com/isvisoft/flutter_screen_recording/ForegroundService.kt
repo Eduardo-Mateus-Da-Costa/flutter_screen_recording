@@ -14,6 +14,10 @@ import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import android.content.pm.ServiceInfo
 import android.util.Log
+import com.sun.tools.javac.tree.TreeInfo.flags
+import jdk.jpackage.internal.Arguments.CLIOptions.context
+
+
 
 class ForegroundService : Service() {
     companion object {
@@ -57,16 +61,14 @@ class ForegroundService : Service() {
     }
 
     fun startFService(context: Context?) {
-        val pm = applicationContext.packageManager
-        val notificationIntent  = pm.getLaunchIntentForPackage(applicationContext.packageName)
-
+        val nfIntent: Intent = Intent(this, FlutterScreenRecordingPlugin::class.java)
         var flags = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT > 23) flags = flags or PendingIntent.FLAG_IMMUTABLE
 
         var context = context ?: this
         val pendingIntent  = PendingIntent.getActivity(
             context, 0,
-            notificationIntent, flags
+            nfIntent, flags
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
