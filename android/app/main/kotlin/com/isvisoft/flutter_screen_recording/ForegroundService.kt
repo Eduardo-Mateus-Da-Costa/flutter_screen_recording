@@ -78,7 +78,7 @@ class ForegroundService : Service() {
             }
             channel.setShowBadge(false)
             // Register the channel with the system
-            val manager = getSystemService(NotificationManager::class.java)
+            val manager = context.getSystemService(NotificationManager::class.java)
             manager!!.createNotificationChannel(channel)
         }
 
