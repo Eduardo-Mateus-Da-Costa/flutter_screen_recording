@@ -45,7 +45,7 @@ class ForegroundService : Service() {
         } else if (intent?.action == ACTION_START) {
             print("startService")
             Log.d("StartForeground", "L startService")
-            startService()
+            startFService()
         }
         print("START_STICKY")
         Log.d("StartForeground", "L START_STICKY")
@@ -56,7 +56,7 @@ class ForegroundService : Service() {
         stopForeground(true)
     }
 
-    fun startService(context: Context?) {
+    fun startFService(context: Context?) {
         val pm = applicationContext.packageManager
         val notificationIntent  = pm.getLaunchIntentForPackage(applicationContext.packageName)
 

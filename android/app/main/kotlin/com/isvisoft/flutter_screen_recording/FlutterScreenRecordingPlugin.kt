@@ -179,14 +179,14 @@ class FlutterScreenRecordingPlugin(
             print("P Start Foreground Service")
             Log.d("StartForegroundService", "L Start Foreground Service")
 //            context.startForegroundService(intent)
-            ForegroundService().startService(context)
+            ForegroundService().startFService(context)
             print("P Start Foreground Service")
             Log.d("StartForegroundService", "L Start Foreground Service")
         } else {
             print("P Start Foreground Service2")
             Log.d("StartForegroundService", "L Start Foreground Service2")
 //            context.startService(intent)
-            ForegroundService().startService(context)
+            ForegroundService().startFService(context)
             print("P Start Foreground Service2")
             Log.d("StartForegroundService", "L Start Foreground Service2")
         }
