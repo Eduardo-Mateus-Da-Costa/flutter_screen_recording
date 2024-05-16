@@ -49,14 +49,26 @@ import com.isvisoft.flutter_screen_recording.ForegroundService
 class FlutterScreenRecordingPlugin(
     private val registrar: Registrar
 ) : MethodCallHandler, PluginRegistry.ActivityResultListener{
-    private val SCREEN_RECORD_REQUEST_CODE = 333
 
-    private lateinit var _result: MethodChannel.Result
-
+    var mScreenDensity: Int = 0
+    var mMediaRecorder: MediaRecorder? = null
     var mProjectionManager: MediaProjectionManager? = null
     var mMediaProjection: MediaProjection? = null
     var mMediaProjectionCallback: MediaProjectionCallback? = null
     var mVirtualDisplay: VirtualDisplay? = null
+    var mDisplayWidth: Int = 1280
+    var mDisplayHeight: Int = 800
+    var videoName: String? = ""
+    var mFileName: String? = ""
+    var recordAudio: Boolean? = false;
+    var recordInternalAudio: Boolean? = false;
+    var isRecordingAudio: Boolean = false;
+    var audioPath: String? = ""
+    var audioRecord: AudioRecord? = null
+    var intentData: Intent? = null
+    private val SCREEN_RECORD_REQUEST_CODE = 333
+
+    private lateinit var _result: MethodChannel.Result
 
 
     companion object {
@@ -91,9 +103,6 @@ class FlutterScreenRecordingPlugin(
     }
 
     override fun  onMethodCall(call: MethodCall, result: Result) {
-        if (context == null) {
-            context = registrar.context()
-        }
         if (call.method == "startRecordScreen") {
             try {
                 _result = result
@@ -105,34 +114,30 @@ class FlutterScreenRecordingPlugin(
                 if (message == null || message == "") {
                     message = "Your screen is being recorded"
                 }
-                Log.d("StartRecordScreen", "L Start Record Screen")
-                print("P Start Record Screen")
-                startForegroundService(context!!, title, message)
-                Log.d("StartRecordScreen", "L Start Record Screen")
-                print("P Start Record Screen")
-//                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
-//
-//                val metrics = DisplayMetrics()
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                    mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
-//                } else {
-//                    @Suppress("DEPRECATION")
-//                    mMediaRecorder = MediaRecorder()
-//                }
-//
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//                    val display = registrar.activity()!!.display
-//                    display?.getRealMetrics(metrics)
-//                } else {
-//                    val defaultDisplay = registrar.context().applicationContext.getDisplay()
-//                    defaultDisplay?.getMetrics(metrics)
-//                }
-//                mScreenDensity = metrics.densityDpi
-//                calculeResolution(metrics)
-//                videoName = call.argument<String?>("name")
-//                recordAudio = call.argument<Boolean?>("audio")
-//                recordInternalAudio = call.argument<Boolean?>("internalaudio")
-//                prepareRecordScreen()
+                ForegroundService.startService(registrar.context(), title, message)
+                mProjectionManager = registrar.context().applicationContext.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager?
+
+                val metrics = DisplayMetrics()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    mMediaRecorder = MediaRecorder(registrar.context().applicationContext)
+                } else {
+                    @Suppress("DEPRECATION")
+                    mMediaRecorder = MediaRecorder()
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    val display = registrar.activity()!!.display
+                    display?.getRealMetrics(metrics)
+                } else {
+                    val defaultDisplay = registrar.context().applicationContext.getDisplay()
+                    defaultDisplay?.getMetrics(metrics)
+                }
+                mScreenDensity = metrics.densityDpi
+                calculeResolution(metrics)
+                videoName = call.argument<String?>("name")
+                recordAudio = call.argument<Boolean?>("audio")
+                recordInternalAudio = call.argument<Boolean?>("internalaudio")
+                prepareRecordScreen()
 
             } catch (e: Exception) {
                 Log.d("Error onMethodCall startRecordScreen", e.message+"")
@@ -141,9 +146,7 @@ class FlutterScreenRecordingPlugin(
             }
         } else if (call.method == "stopRecordScreen") {
             try {
-                Log.d("StopRecordScreen", "Stop Record Screen")
-                print("P Stop Record Screen")
-                stopForegroundService(registrar.context())
+                ForegroundService.stopService(registrar.context())
                 if (mMediaRecorder != null) {
                     stopRecord()
                     result.success(mFileName)
@@ -159,41 +162,6 @@ class FlutterScreenRecordingPlugin(
             result.notImplemented()
         }
     }
-
-
-    private fun startForegroundService(context: Context, title: String, content: String) {
-        val intent = Intent(context, ForegroundService::class.java)
-        intent.action = ForegroundService.ACTION_START
-        print("P Start Foreground Service")
-        Log.d("StartForegroundService", "L Start Foreground Service")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            print("P Start Foreground Service")
-            Log.d("StartForegroundService", "L Start Foreground Service")
-//            context.startForegroundService(intent)
-            ForegroundService().startFService(context)
-            print("P Start Foreground Service")
-            Log.d("StartForegroundService", "L Start Foreground Service")
-        } else {
-            print("P Start Foreground Service2")
-            Log.d("StartForegroundService", "L Start Foreground Service2")
-//            context.startService(intent)
-            ForegroundService().startFService(context)
-            print("P Start Foreground Service2")
-            Log.d("StartForegroundService", "L Start Foreground Service2")
-        }
-    }
-
-    private fun stopForegroundService(context: Context) {
-        val intent = Intent(context, ForegroundService::class.java)
-        intent.action = ForegroundService.ACTION_SHUTDOWN
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
-        } else {
-            context.startService(intent)
-        }
-    }
-
-
 
     private fun calculeResolution(metrics: DisplayMetrics) {
 
