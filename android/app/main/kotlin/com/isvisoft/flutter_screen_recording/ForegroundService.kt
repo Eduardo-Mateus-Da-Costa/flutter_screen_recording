@@ -59,11 +59,11 @@ class ForegroundService : Service() {
     }
 
     fun startFService(context: Context?) {
-        val nfIntent: Intent = Intent(this, FlutterScreenRecordingPlugin::class.java)
+        var context = context ?: this
+        val nfIntent: Intent = Intent(context, FlutterScreenRecordingPlugin::class.java)
         var flags = PendingIntent.FLAG_UPDATE_CURRENT
         if (Build.VERSION.SDK_INT > 23) flags = flags or PendingIntent.FLAG_IMMUTABLE
 
-        var context = context ?: this
         val pendingIntent  = PendingIntent.getActivity(
             context, 0,
             nfIntent, flags
