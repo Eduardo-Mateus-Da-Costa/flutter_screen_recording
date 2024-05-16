@@ -14,23 +14,23 @@ import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import android.content.pm.ServiceInfo
 import android.util.Log
+import androidx.annotation.RequiresApi
 
 import com.isvisoft.flutter_screen_recording.FlutterScreenRecordingPlugin
 
+@RequiresApi(Build.VERSION_CODES.Q)
 class ForegroundService : Service() {
     companion object {
-        @JvmStatic
-        val ACTION_SHUTDOWN = "SHUTDOWN"
-        @JvmStatic
-        val ACTION_START = "START"
-        @JvmStatic
-        val CHANNEL_ID = "flutter_screen_recording"
-        @JvmStatic
-        private val TAG = "ForegroundService"
+        private const val FOREGROUND_SERVICE_ID = 357
+        private const val CHANNEL_ID = "flutter_screen_recording"
     }
 
     override fun onBind(intent: Intent) : IBinder? {
         return null
+    }
+
+    override fun onCreate() {
+        super.onCreate()
     }
 
     override fun onDestroy() {
@@ -38,24 +38,44 @@ class ForegroundService : Service() {
         super.onDestroy()
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int) : Int {
-        print("onStartCommand")
-        Log.d("StartForeground", "L onStartCommand")
-        if (intent?.action == ACTION_SHUTDOWN) {
-            cleanupService()
-            stopSelf()
-        } else if (intent?.action == ACTION_START) {
-            print("startService")
-            Log.d("StartForeground", "L startService")
-            startFService(null)
-        }
-        print("START_STICKY")
-        Log.d("StartForeground", "L START_STICKY")
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notification = createNotification()
+        startForeground(FOREGROUND_SERVICE_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
         return START_STICKY
     }
 
-    private fun cleanupService() {
-        stopForeground(true)
+    private fun createNotification(): Notification {
+        Log.d("CreateNotification", "Creating notification")
+        val nfIntent: Intent = Intent(this, ForegroundService::class.java)
+        var flags = PendingIntent.FLAG_UPDATE_CURRENT
+        if (Build.VERSION.SDK_INT > 23) flags = flags or PendingIntent.FLAG_IMMUTABLE
+        val channel = NotificationChannel(
+            CHANNEL_ID
+            "Datacertify está gravando a tela",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Datacertify está gravando a tela"
+        }
+        channel.setShowBadge(false)
+        // Register the channel with the system
+        val manager = context.getSystemService(NotificationManager::class.java)
+        manager!!.createNotificationChannel(channel)
+
+        val pendingIntent  = PendingIntent.getActivity(
+            this, 0,
+            nfIntent, flags
+        )
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Datacertify está gravando a tela")
+            .setContentText("Datacertify está gravando a tela")
+            .setSmallIcon(R.drawable.icon)
+            .setContentIntent(pendingIntent)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+
+        Log.d("CreateNotification", "Notification created")
+        return notification
     }
 
     fun startFService(context: Context?) {
@@ -83,24 +103,10 @@ class ForegroundService : Service() {
             manager!!.createNotificationChannel(channel)
         }
 
-        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("Datacertify está gravando a tela")
-            .setContentText("Datacertify está gravando a tela")
-            .setSmallIcon(R.drawable.icon)
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .build()
-
         print("P StartForeground 1")
         Log.d("StartForeground", "L StartForeground 1")
-        startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+
         print("P StartForeground 2")
         Log.d("StartForeground", "Foreground service started")
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent) {
-        super.onTaskRemoved(rootIntent)
-        cleanupService()
-        stopSelf()
     }
 }

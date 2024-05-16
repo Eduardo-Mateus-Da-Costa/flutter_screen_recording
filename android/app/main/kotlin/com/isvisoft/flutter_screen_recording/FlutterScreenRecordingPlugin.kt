@@ -49,27 +49,14 @@ import com.isvisoft.flutter_screen_recording.ForegroundService
 class FlutterScreenRecordingPlugin(
     private val registrar: Registrar
 ) : MethodCallHandler, PluginRegistry.ActivityResultListener{
+    private val SCREEN_RECORD_REQUEST_CODE = 333
 
-    var mScreenDensity: Int = 0
-    var mMediaRecorder: MediaRecorder? = null
+    private lateinit var _result: MethodChannel.Result
+
     var mProjectionManager: MediaProjectionManager? = null
     var mMediaProjection: MediaProjection? = null
     var mMediaProjectionCallback: MediaProjectionCallback? = null
     var mVirtualDisplay: VirtualDisplay? = null
-    var mDisplayWidth: Int = 1280
-    var mDisplayHeight: Int = 800
-    var videoName: String? = ""
-    var mFileName: String? = ""
-    var recordAudio: Boolean? = false;
-    var recordInternalAudio: Boolean? = false;
-    var isRecordingAudio: Boolean = false;
-    var audioPath: String? = ""
-    var audioRecord: AudioRecord? = null
-    var intentData: Intent? = null
-    var context: Context? = null
-    private val SCREEN_RECORD_REQUEST_CODE = 333
-
-    private lateinit var _result: MethodChannel.Result
 
 
     companion object {
